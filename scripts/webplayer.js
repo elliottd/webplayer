@@ -4,7 +4,7 @@ $( document ).ready(function() {
   if (Modernizr.localstorage) {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
-    loadPlayers();
+    readPlayers();
   } 
   else 
   {
@@ -28,9 +28,9 @@ $(window).resize(function() {
   setPlayerWidth();
 });
 
-function load(sender) {
+function loadPlayer(sender) {
   // Load a player into the iframe
-  var iframe = document.getElementById("iframe");
+  var iframe = document.getElementById("playerframe");
   var url = sender.currentTarget.parentNode.childNodes.item(1).textContent;
   iframe.src = url;
   document.title = sender.currentTarget.parentNode.childNodes.item(0).textContent;
@@ -38,15 +38,12 @@ function load(sender) {
 
 function setPlayerWidth()
 {
-  var player = document.getElementById("player");
   var width = document.body.clientWidth;
-  // playerList = 200px and has 2 x 10px paddings
+  // playerList = 300px and has 2 x 10px paddings
+  // TOOD: Make this change the style.height instead of <>.height
   width = width - 300 - 10 - 10;
-  player.setAttribute("width", width+"px");
-  player.style.display="none";
-  player.style.display="block";
-  var iframe = document.getElementById("iframe");
-  iframe.setAttribute("width", width+"px");
+  $("#player").css("width", width+"px");
+  $("#playerframe").css("width", width+"px");
 }
 
 function resetPlaylistAttributes()
@@ -57,8 +54,7 @@ function resetPlaylistAttributes()
         img.setAttribute("src", "images/delete.png");
         img.setAttribute("id", "delete");
         img.setAttribute("onclick", "deletePlayer(this)");
-        img.setAttribute("style", "width:16px; height: 16px; position: absolute; left: 280px; margin-top: 2px;");
-        // TODO: set margin-top: -20px; when the <a> textContent is overflowing
+        img.setAttribute("class", "delete");
         $(this).append(img);
     },
     function() {
@@ -66,13 +62,13 @@ function resetPlaylistAttributes()
     }
   );
 
-  // This binds actions to the new <li> elements
+  // This binds actions to the new <li> elements that make them open the players
   $("a").on("click", function(event) {
-    load(event);
+    loadPlayer(event);
   });
 }
 
-function loadPlayers()
+function readPlayers()
 {
   // Read the saved players from the localstorage and populate the
   // playerlist with the stored metadata
@@ -91,7 +87,7 @@ function loadPlayers()
   }
 
   var options = {
-    item: '<li><a id="playerLink" href="#" class="name playlist_button"></a><span class="url" style="display: none;" id="url"></span><span class="id" style="display: none;" id="id"></span></li>'
+    item: '<li><a id="playerLink" href="#" class="name playlist_button"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'  
   };
 
   var playerList = new List('playerlist', options, values);
@@ -118,7 +114,7 @@ function addNewPlayer()
     localStorage["webplayer.players." + counter+".url"] = form.elements["url"].value;
     localStorage["webplayer.counter"] = counter + 1;
   }
-  loadPlayers();
+  readPlayers();
   return false;
 }
 
@@ -130,7 +126,7 @@ function deletePlayer(sender)
     localStorage.removeItem("webplayer.players."+key+".name");
     localStorage.removeItem("webplayer.players."+key+".added");
     localStorage.removeItem("webplayer.players."+key+".url");
-    loadPlayers();
+    readPlayers();
   }
 }
 
