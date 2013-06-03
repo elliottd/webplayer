@@ -8,16 +8,17 @@
     <script type="text/javascript" src="scripts/webplayer.js"></script>
     <script type="text/javascript" src="scripts/modernizr-latest.js"></script>
     <script type="text/javascript" src="scripts/list.min.js"></script>
+    <script type="text/javascript" src="scripts/api.js"></script>
   </head>
   <body>
-    <div class="playerlist" id="playerlist">
+    <div id="playerlist" class="playerlist">
       <input class="search rounded_input" placeholder="Search..."/>
       <ul class="list"></ul>
       <form id="newPlayerForm" class="addForm">
         <div class="addBorder"></div>
-        <input id="name" class="rounded_input" type="text" placeholder=" Name (optional)"></input><br/>
+        <input id="name" class="rounded_input" type="text" placeholder=" Name"></input><br/>
         <input id="url" class="rounded_input" type="text" placeholder=" URL"></input><br/>
-        <input class="rounded_input" type="submit" value="Add new player"></input>
+        <input class="rounded_input" type="submit" value="Add new player"></input><br/>
       </form>
     </div>
     <div id="player" class="player">

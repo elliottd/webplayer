@@ -1,9 +1,13 @@
-// These events are run when the DOM for the page is ready
+// These events are run when the DOM is ready
 $( document ).ready(function() {
  
   if (Modernizr.localstorage) {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
+    if (localStorage.length == 0)
+    {
+      initialiseLocalStorage();
+    }
     readPlayers();
   } 
   else 
@@ -12,36 +16,53 @@ $( document ).ready(function() {
     // maybe try dojox.storage or a third-party solution
     alert("HTML5 localtstorage not supported =(")
   }
-  setPlayerWidth();
 
-  // This binds an action to the #newPlayerForm form
-  $( "#newPlayerForm" ).on( "submit", function( event ) {
+  setPlayerDivWidth();
+  initialiseEventHandlers();
+
+});
+
+function initialiseLocalStorage()
+{
+  localStorage.setItem('webplayer.counter', 0);
+}
+
+function initialiseEventHandlers()
+{
+  // This binds the localstorage submit action to #newPlayerForm
+  $("#newPlayerForm").on("submit", function( event ) {
     event.preventDefault();
     addNewPlayer(); 
     $('#newPlayerForm').trigger("reset");
   });
-
-});
+}
 
 // Resize the player whenever the window is resized.
 $(window).resize(function() {
-  setPlayerWidth();
+  setPlayerDivWidth();
 });
 
 function loadPlayer(sender) {
   // Load a player into the iframe
+  // TODO: Fix focus so <space> can pause
   var iframe = document.getElementById("playerframe");
-  var url = sender.currentTarget.parentNode.childNodes.item(1).textContent;
-  iframe.src = url;
-  document.title = sender.currentTarget.parentNode.childNodes.item(0).textContent;
+  var purl = sender.currentTarget.parentNode.childNodes.item(1).textContent;
+  iframe.src = purl;
+  if (purl.search("soundcloud.com") > 0)
+  {
+    // TODO: Autoplay on load
+    iframe.src = "http://w.soundcloud.com/player/?url="+purl;
+    soundcloudWidget = SC.Widget(iframe);
+    soundcloudWidget.load(purl, {'autoplay': true});
+  }
+  document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(0).textContent;
 }
 
-function setPlayerWidth()
+function setPlayerDivWidth()
 {
   var width = document.body.clientWidth;
   // playerList = 300px and has 2 x 10px paddings
-  // TOOD: Make this change the style.height instead of <>.height
-  width = width - 300 - 10 - 10;
+  width = width - 320;
   $("#player").css("width", width+"px");
   $("#playerframe").css("width", width+"px");
 }
@@ -49,13 +70,20 @@ function setPlayerWidth()
 function resetPlaylistAttributes()
 {
   $("li").hover(
+      // TODO: Redesign this so it's a fadein/out div underneath the title
       function() {
-        img = document.createElement("img");
-        img.setAttribute("src", "images/delete.png");
-        img.setAttribute("id", "delete");
-        img.setAttribute("onclick", "deletePlayer(this)");
-        img.setAttribute("class", "delete");
-        $(this).append(img);
+        del = document.createElement("img");
+        del.setAttribute("src", "images/delete.png");
+        del.setAttribute("id", "delete");
+        del.setAttribute("onclick", "deletePlayer(this)");
+        del.setAttribute("class", "delete");
+        $(this).append(del);
+        edit = document.createElement("img");
+        edit.setAttribute("src", "images/edit.png");
+        edit.setAttribute("id", "edit");
+        edit.setAttribute("class", "edit");
+        edit.setAttribute("onclick", "editPlayer(this)");
+        $(this).append(edit);
     },
     function() {
       $(this).find("img").remove();
@@ -63,15 +91,29 @@ function resetPlaylistAttributes()
   );
 
   // This binds actions to the new <li> elements that make them open the players
-  $("a").on("click", function(event) {
+  $(".playerlink").on("click", function(event) {
     loadPlayer(event);
   });
+}
+
+function editPlayer(sender)
+{
+  // TODO: Javascript prompts are ugly. Make this beautiful. fancybox?
+  var name = prompt("Enter a name", sender.parentNode.childNodes.item(0).textContent);
+  var key = sender.parentNode.childNodes.item(2).textContent;
+  if (key != null && name != null)
+  {
+    localStorage.setItem("webplayer.players."+key+".name", name);
+    readPlayers();
+  }
 }
 
 function readPlayers()
 {
   // Read the saved players from the localstorage and populate the
   // playerlist with the stored metadata
+  // TODO: set <a title=webplayer.players.i.added>
+
   var values = [];
 
   var counter = parseInt(localStorage["webplayer.counter"])
@@ -87,7 +129,7 @@ function readPlayers()
   }
 
   var options = {
-    item: '<li><a id="playerLink" href="#" class="name playlist_button"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'  
+    item: '<li><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'  
   };
 
   var playerList = new List('playerlist', options, values);
@@ -103,16 +145,25 @@ function addNewPlayer()
   //       different domains.
   if (Modernizr.localstorage)
   {
-    var counter = parseInt(localStorage["webplayer.counter"]);
-    if (isNaN(counter))
-    {
-      counter = 0;
-    }
     var form = document.getElementById("newPlayerForm");
-    localStorage["webplayer.players." + counter+".name"] = form.elements["name"].value;
-    localStorage["webplayer.players." + counter+".added"] = new Date();
-    localStorage["webplayer.players." + counter+".url"] = form.elements["url"].value;
-    localStorage["webplayer.counter"] = counter + 1;
+
+    if (url.length == 0)
+    {
+      return;
+    }
+
+    var counter = parseInt(localStorage.getItem("webplayer.counter"));
+    if (form.elements["name"].value.length > 0)
+    {
+      localStorage.setItem("webplayer.players." + counter+".name", form.elements["name"].value);
+    }
+    else
+    {
+      localStorage.setItem("webplayer.players." + counter+".name", "No name");
+    }
+    localStorage.setItem("webplayer.players." + counter+".added", new Date());
+    localStorage.setItem("webplayer.players." + counter+".url", form.elements["url"].value);
+    localStorage.setItem("webplayer.counter", counter + 1);
   }
   readPlayers();
   return false;
@@ -123,23 +174,12 @@ function deletePlayer(sender)
   if (Modernizr.localstorage)
   {
     var key = sender.parentNode.childNodes.item(2).textContent;
-    localStorage.removeItem("webplayer.players."+key+".name");
-    localStorage.removeItem("webplayer.players."+key+".added");
-    localStorage.removeItem("webplayer.players."+key+".url");
-    readPlayers();
+    if (key != null)
+    {
+      localStorage.removeItem("webplayer.players."+key+".name");
+      localStorage.removeItem("webplayer.players."+key+".added");
+      localStorage.removeItem("webplayer.players."+key+".url");
+      readPlayers();
+     }
   }
-}
-
-function loadNewPlayer()
-{
-  var options = {
-    valueNames: ['name', 'url', 'id']
-  };
-
-  var playerList = new List('playerlist', options);
-
-  var justAdded = parseInt(localStorage["webplayer.counter"])-1;
-  playerList.add( {name: localStorage.getItem("webplayer.players."+justAdded+".name"),
-                   url: localStorage.getItem("webplayer.players."+justAdded+".url")});
-  
 }
