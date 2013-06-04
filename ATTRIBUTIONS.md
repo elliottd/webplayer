@@ -1,4 +1,7 @@
-list.min.js is used under its MIT License.
-jquery-1.9.1.min.js is used under its MIT License.
-modernizr-latest.js is used under its MIT License.
-api.js is used under the Soundcloud API Terms of Use.
+Attributions
+============
+
+ * list.min.js is used under its MIT License.
+ * jquery-1.9.1.min.js is used under its MIT License.
+ * modernizr-latest.js is used under its MIT License.
+ * api.js is used under the Soundcloud API Terms of Use.
