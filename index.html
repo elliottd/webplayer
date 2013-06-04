@@ -12,17 +12,27 @@
   </head>
   <body>
     <div id="playerlist" class="playerlist">
-      <input class="search rounded_input" placeholder="Search..."/>
+
+      <div class="filter">
+        <input class="search wide-input rounded_input"
+          placeholder="Filter..."/>
+      </div>
+
       <ul class="list"></ul>
+
       <form id="newPlayerForm" class="addForm">
-        <div class="addBorder"></div>
-        <input id="name" class="rounded_input" type="text" placeholder=" Name"></input><br/>
-        <input id="url" class="rounded_input" type="text" placeholder=" URL"></input><br/>
-        <input class="rounded_input" type="submit" value="Add new player"></input><br/>
+        <input id="name" class="wide-input rounded_input" type="text"
+          placeholder=" Name"></input><br/>
+        <input id="url" class="wide-input rounded_input" type="text"
+          placeholder=" URL"></input><br/>
+        <input class="rounded_input" type="submit"
+          value="Add new player"></input><br/>
       </form>
     </div>
+
     <div id="player" class="player">
       <iframe id="playerframe" class="playerframe"></iframe>
     </div>
+
   </body>
 </html>
