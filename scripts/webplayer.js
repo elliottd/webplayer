@@ -1,6 +1,6 @@
 // These events are run when the DOM is ready
 $( document ).ready(function() {
- 
+
   if (Modernizr.localstorage) {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
@@ -9,8 +9,8 @@ $( document ).ready(function() {
       initialiseLocalStorage();
     }
     readPlayers();
-  } 
-  else 
+  }
+  else
   {
     // no native support for HTML5 storage :(
     // maybe try dojox.storage or a third-party solution
@@ -32,9 +32,14 @@ function initialiseEventHandlers()
   // This binds the localstorage submit action to #newPlayerForm
   $("#newPlayerForm").on("submit", function( event ) {
     event.preventDefault();
-    addNewPlayer(); 
+    addNewPlayer();
     $('#newPlayerForm').trigger("reset");
   });
+
+  $(".toggler").click(function(event) {
+    var that = $(this);
+    $("#" + that.attr("data-toggle")).slideToggle(200);
+  })
 }
 
 // Resize the player whenever the window is resized.
@@ -122,14 +127,14 @@ function readPlayers()
     var exists = localStorage.getItem("webplayer.players."+i+".name");
     if (exists != null)
     {
-      values.push({name: localStorage.getItem("webplayer.players."+i+".name"), 
+      values.push({name: localStorage.getItem("webplayer.players."+i+".name"),
                    url: localStorage.getItem("webplayer.players."+i+".url"),
                    id: i});
     }
   }
 
   var options = {
-    item: '<li><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'  
+    item: '<li><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'
   };
 
   var playerList = new List('playerlist', options, values);
@@ -139,7 +144,7 @@ function readPlayers()
 function addNewPlayer()
 {
   // TODO: Scrape the Bandcamp <head> to extract a reference to the playlist ID
-  //       so we can embedd HTML5 players instead of full pages inside the 
+  //       so we can embedd HTML5 players instead of full pages inside the
   //       IFRAME
   // TODO: Make this modular so it can effectively cope with adding resources from
   //       different domains.
