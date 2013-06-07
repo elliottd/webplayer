@@ -27,24 +27,28 @@ function initialiseLocalStorage()
   localStorage.setItem('webplayer.counter', 0);
 }
 
+function toggleTogglerAndForm()
+{
+  $("#newPlayerForm").trigger("reset");
+  $("#newPlayerForm").slideToggle(200);
+  $(".toggler").slideToggle(200);
+}
+
 function initialiseEventHandlers()
 {
   // This binds the localstorage submit action to #newPlayerForm
   $("#newPlayerForm").on("submit", function( event ) {
     event.preventDefault();
+    toggleTogglerAndForm();
     addNewPlayer();
-    $('#newPlayerForm').trigger("reset");
-    $("#newPlayerForm").slideToggle(200);
   });
 
-  $("#cancelAdd").click(function(event) {
-    $('#newPlayerForm').trigger("reset");
-    $("#newPlayerForm").slideToggle(200);
+  $("#cancelAddPlayer").click(function(event) {
+    toggleTogglerAndForm();
   });
 
   $(".toggler").click(function(event) {
-    var that = $(this);
-    $("#" + that.attr("data-toggle")).slideToggle(200);
+    toggleTogglerAndForm();
   })
 }
 
