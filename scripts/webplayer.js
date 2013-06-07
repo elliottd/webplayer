@@ -103,9 +103,12 @@ function resetPlaylistAttributes()
 
 function editPlayer(sender)
 {
+
   // TODO: Javascript prompts are ugly. Make this beautiful. fancybox?
-  var name = prompt("Enter a name", sender.parentNode.childNodes.item(0).textContent);
-  var key = sender.parentNode.childNodes.item(2).textContent;
+
+  var parentNode = sender.parentNode;
+  var name = prompt("Enter a name", parentNode.childNodes.item(0).textContent);
+  var key = parentNode.childNodes.item(2).textContent;
   if (key != null && name != null)
   {
     localStorage.setItem("webplayer.players."+key+".name", name);
