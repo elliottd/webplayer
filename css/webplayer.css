@@ -95,7 +95,9 @@ ul.list li {
   height: 100%;
   position: fixed;
   text-align: center;
-  overflow-y: auto;
+  overflow-y: scroll;
+
+
 }
 
 .player

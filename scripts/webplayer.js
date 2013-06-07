@@ -34,6 +34,7 @@ function initialiseEventHandlers()
     event.preventDefault();
     addNewPlayer();
     $('#newPlayerForm').trigger("reset");
+    $("#newPlayerForm").slideToggle(200);
   });
 
   $(".toggler").click(function(event) {
