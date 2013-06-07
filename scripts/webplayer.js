@@ -37,6 +37,11 @@ function initialiseEventHandlers()
     $("#newPlayerForm").slideToggle(200);
   });
 
+  $("#cancelAdd").click(function(event) {
+    $('#newPlayerForm').trigger("reset");
+    $("#newPlayerForm").slideToggle(200);
+  });
+
   $(".toggler").click(function(event) {
     var that = $(this);
     $("#" + that.attr("data-toggle")).slideToggle(200);
