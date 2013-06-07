@@ -17,7 +17,7 @@ $( document ).ready(function() {
     alert("HTML5 localtstorage not supported =(")
   }
 
-  setPlayerDivWidth();
+  setPlayerDivDimensions();
   initialiseEventHandlers();
 
 });
@@ -44,7 +44,7 @@ function initialiseEventHandlers()
 
 // Resize the player whenever the window is resized.
 $(window).resize(function() {
-  setPlayerDivWidth();
+  setPlayerDivDimensions();
 });
 
 function loadPlayer(sender) {
@@ -63,13 +63,18 @@ function loadPlayer(sender) {
   document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(0).textContent;
 }
 
-function setPlayerDivWidth()
+function setPlayerDivDimensions()
 {
   var width = document.body.clientWidth;
   // playerList = 300px and has 2 x 10px paddings
   width = width - 320;
-  $("#player").css("width", width+"px");
-  $("#playerframe").css("width", width+"px");
+
+  $("#player").css("width", width);
+  $("#playerframe").css("width", width);
+
+  // TODO: Set div and frame height more correctly than this hack.
+  $("#player").css("height", document.height);
+  $("#playerFrame").css("height", document.height);
 }
 
 function resetPlaylistAttributes()
