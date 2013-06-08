@@ -89,26 +89,19 @@ function setPlayerDivDimensions()
 
 function resetPlaylistAttributes()
 {
-  $("li").hover(
-      // TODO: Redesign this so it's a fadein/out div underneath the title
-      function() {
-        del = document.createElement("img");
-        del.setAttribute("src", "images/delete.png");
-        del.setAttribute("id", "delete");
-        del.setAttribute("onclick", "deletePlayer(this)");
-        del.setAttribute("class", "delete");
-        $(this).append(del);
-        edit = document.createElement("img");
-        edit.setAttribute("src", "images/edit.png");
-        edit.setAttribute("id", "edit");
-        edit.setAttribute("class", "edit");
-        edit.setAttribute("onclick", "editPlayer(this)");
-        $(this).append(edit);
-    },
-    function() {
-      $(this).find("img").remove();
-    }
-  );
+  $("li").hoverIntent({
+    over: slideDownwards,
+    interval: 1000,
+    out: slideUpwards
+  });
+
+  $(".tools-delete").click(function(event) {
+    deletePlayer(event);
+  });
+
+  $(".tools-edit").click(function(event) {
+    editPlayer(event);
+  });
 
   // This binds actions to the new <li> elements that make them open the players
   $(".playerlink").on("click", function(event) {
@@ -116,14 +109,25 @@ function resetPlaylistAttributes()
   });
 }
 
+function slideDownwards()
+{
+  $(this).find(".tools").slideDown(200);
+}
+
+function slideUpwards()
+{
+  $(this).find(".tools").slideUp(200);
+}
+
+
 function editPlayer(sender)
 {
 
   // TODO: Javascript prompts are ugly. Make this beautiful. fancybox?
 
-  var parentNode = sender.parentNode;
-  var name = prompt("Enter a name", parentNode.childNodes.item(0).textContent);
-  var key = parentNode.childNodes.item(2).textContent;
+  var parentNode = sender.currentTarget.parentNode;
+  var name = prompt("Enter a name", parentNode.parentNode.childNodes.item(0).childNodes.item(0).textContent);
+    var key = parentNode.parentNode.childNodes.item(0).childNodes.item(2).textContent;
   if (key != null && name != null)
   {
     localStorage.setItem("webplayer.players."+key+".name", name);
@@ -152,7 +156,7 @@ function readPlayers()
   }
 
   var options = {
-    item: '<li><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></li>'
+    item: '<li><div class="playerLinkDiv"><div><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit" href="#">Edit</a><a class="tools-delete" href="#"">Delete</a></div></div></li>'
   };
 
   var playerList = new List('playerlist', options, values);
@@ -196,7 +200,7 @@ function deletePlayer(sender)
 {
   if (Modernizr.localstorage)
   {
-    var key = sender.parentNode.childNodes.item(2).textContent;
+    var key = sender.currentTarget.parentNode.parentNode.childNodes.item(0).childNodes.item(2).textContent;
     if (key != null)
     {
       localStorage.removeItem("webplayer.players."+key+".name");

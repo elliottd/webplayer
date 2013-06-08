@@ -20,33 +20,28 @@ ul.list li {
   text-align: left;
 }
 
-.edit
+.tools-delete
 {
-  width: 16px;
-  height: 16px;
-  margin-top: 4px;
-  position: absolute;
-  left: 250px;
+  text-decoration: none;
+  color: #f1f1f1;
+  margin: 0 50px 0 50px;
+  padding: 4px;
+  border: 1px solid #f1f1f1;
 }
 
-.delete
+.tools-edit
 {
-  width: 16px;
-  height: 16px;
-  margin-top: 4px;
-  position: absolute;
-  left: 270px;
+  text-decoration: none;
+  color: #f1f1f1;
+  margin: 0 50px 0 50px;
+  padding: 4px;
+  border: 1px solid #f1f1f1;
 }
 
-.about
+div.tools
 {
-  clear:both;
-  width: 24px;
-  height: 24px;
-  left: 4px;
-  position: relative;
-  top: 8px;
-  float:left;
+  padding: 12px 0 8px 0;
+  clear: both;
 }
 
 .playerframe
@@ -96,8 +91,6 @@ ul.list li {
   position: fixed;
   text-align: center;
   overflow-y: scroll;
-
-
 }
 
 .player
@@ -123,7 +116,6 @@ ul.list li {
   text-decoration:none;
   border: 0;
   color: #f1f1f1;
-  width: 230px;
 }
 
 .hidden
