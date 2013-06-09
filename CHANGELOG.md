@@ -1,3 +1,10 @@
+r3
+
+ * Redesigned playlist, with thanks to @mikerhodes
+     + New font
+     + Slide down context menus
+     + Repositioned add player
+
 r2
 
  * Abstracted CSS from HTML.
