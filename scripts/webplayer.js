@@ -39,8 +39,8 @@ function initialiseEventHandlers()
   // This binds the localstorage submit action to #newPlayerForm
   $("#newPlayerForm").on("submit", function( event ) {
     event.preventDefault();
-    toggleTogglerAndForm();
     addNewPlayer();
+    toggleTogglerAndForm();
   });
 
   $("#cancelAddPlayer").click(function(event) {
