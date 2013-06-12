@@ -68,7 +68,7 @@ function loadPlayer(sender) {
     // TODO: Autoplay on load
     iframe.src = "http://w.soundcloud.com/player/?url="+purl;
     soundcloudWidget = SC.Widget(iframe);
-    soundcloudWidget.load(purl, {'autoplay': true});
+    soundcloudWidget.load(purl, {'auto_play': true});
   }
   document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(0).textContent;
 }
