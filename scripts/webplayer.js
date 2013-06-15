@@ -64,22 +64,22 @@ function initialiseEventHandlers()
      },
      open: function() {
         $('.ui-widget-overlay').addClass('darker-overlay');
-        alert(id);
-        if (id != null)
-        {
-          $('.ui-button:contains(Edit player)').show()
-          $('.ui-button:contains(Add player)').hide()
-          $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
-          $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
-          $("#id").val(id);
-        }
-        else
+        var id = $(this).data("id");
+        if (id == null)
         {
           $("#address").val("");
           $("#name").val("");
           $("#id").val("");
           $('.ui-button:contains(Add player)').show()
           $('.ui-button:contains(Edit player)').hide()
+        }
+        else
+        {
+          $('.ui-button:contains(Edit player)').show()
+          $('.ui-button:contains(Add player)').hide()
+          $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
+          $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
+          $("#id").val(id);
         }
      },
      close: function() {
