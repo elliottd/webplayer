@@ -47,6 +47,7 @@ function initialiseEventHandlers()
      width: "auto",
      dialogClass: "addPlayer",
      position: { my: "center", at: "center", of: window },
+     resizable: false,
      buttons: {
        "Add player": function() {
            addNewPlayer($("#name").val(), $("#address").val()); 
