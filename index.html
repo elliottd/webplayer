@@ -22,11 +22,11 @@
       <button id="new-player" class="ui-widget">New player</button>
       <!-- This is only visible when you click the New Player button or an Edit button -->
       <div id="playerForm" title="Add a new player" style="display: none;">
-        <form>
+        <form id="formData">
           <fieldset style="border: 0">
-            <input type="text" name="address" id="address" value="" class="text ui-widget-content ui-corner-all" placeholder=" Address"/><br/>
-            <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" placeholder=" Name"/>
-            <input type="hidden" name="name" id="id"/>
+            <input type="text" name="address" id="address" value="" class="text ui-widget-content ui-corner-all" placeholder=" Address" size="50"/><br/>
+            <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" placeholder=" Name" size="50"/>
+            <input type="hidden" name="id" id="id"/>
           </fieldset>
         </form>
       </div>

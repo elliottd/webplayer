@@ -55,6 +55,7 @@ function initialiseEventHandlers()
        },
        "Edit player": function() {
            editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
+           readPlayers();
            $( this ).dialog( "close" );
        },
        Cancel: function() {
@@ -63,7 +64,7 @@ function initialiseEventHandlers()
      },
      open: function() {
         $('.ui-widget-overlay').addClass('darker-overlay');
-        var id = $(this).data("id");
+        alert(id);
         if (id != null)
         {
           $('.ui-button:contains(Edit player)').show()
@@ -74,21 +75,22 @@ function initialiseEventHandlers()
         }
         else
         {
+          $("#address").val("");
+          $("#name").val("");
+          $("#id").val("");
           $('.ui-button:contains(Add player)').show()
           $('.ui-button:contains(Edit player)').hide()
         }
      },
      close: function() {
-       allFields = $( [] ).add( "#name" ).add( "#address" );
-       allFields.val( "" );
-       $('.ui-widget-overlay').addClass('darker-overlay');
+       $('.ui-widget-overlay').removeClass('darker-overlay');
      }
    });
  
    $( "#new-player" )
      .button()
      .click(function() {
-       $( "#playerForm" ).dialog( "open" );
+       $( "#playerForm" ).data("id",null).dialog( "open" );
      });
 }
 
@@ -165,7 +167,6 @@ function editPlayer(name, address, id)
   {
     localStorage.setItem("webplayer.players."+id+".name", name);
     localStorage.setItem("webplayer.players."+id+".url", address);
-    readPlayers();
   }
 }
 
