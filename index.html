@@ -2,34 +2,36 @@
 <html>
   <head>
     <title>Webplayer</title>
+
     <meta charset="utf-8">
+
     <link type="text/css" href="css/webplayer.css" rel="stylesheet">
-    <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
+    <link type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="scripts/webplayer.js"></script>
     <script type="text/javascript" src="scripts/modernizr-latest.js"></script>
     <script type="text/javascript" src="scripts/list.min.js"></script>
-    <script type="text/javascript" src="scripts/api.js"></script>
+    <script type="text/javascript" src="https://w.soundcloud.com/player/api.js"></script>
     <script type="text/javascript" src="scripts/jquery.hoverIntent.minified.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   </head>
   <body>
     <div id="playerlist" class="playerlist">
 
-      <a class="toggler" data-toggle="newPlayerForm">
-        Add new player
-      </a>
-      <form id="newPlayerForm" class="addForm hidden">
-        <input id="name" class="wide-input rounded_input" type="text"
-          placeholder=" Name"></input><br/>
-        <input id="url" class="wide-input rounded_input" type="text"
-          placeholder=" URL"></input><br/>
-        <input class="rounded_input" type="submit"
-          value="Add new player"></input>
-        <input id="cancelAddPlayer" class="rounded_input" type="button"
-          value="Cancel"></input><br/>
-      </form>
+      <button id="new-player" class="ui-widget">New player</button>
+      <!-- This is only visible when you click the New Player button -->
+      <div id="newPlayerForm" title="Add a new player" style="display: none;">
+        <form>
+          <fieldset style="border: 0">
+            <input type="text" name="address" id="address" value="" class="text ui-widget-content ui-corner-all" placeholder=" Address"/><br/>
+            <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" placeholder=" Name"/>
+          </fieldset>
+        </form>
+      </div>
 
       <div class="filter">
-        <input class="search wide-input rounded_input"
+        <input class="search wide-input rounded_input ui-widget"
           placeholder="Filter..."/>
       </div>
 

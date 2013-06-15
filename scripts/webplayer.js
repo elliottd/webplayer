@@ -36,20 +36,41 @@ function toggleTogglerAndForm()
 
 function initialiseEventHandlers()
 {
-  // This binds the localstorage submit action to #newPlayerForm
-  $("#newPlayerForm").on("submit", function( event ) {
-    event.preventDefault();
-    addNewPlayer();
-    toggleTogglerAndForm();
-  });
 
-  $("#cancelAddPlayer").click(function(event) {
-    toggleTogglerAndForm();
-  });
-
-  $(".toggler").click(function(event) {
-    toggleTogglerAndForm();
-  })
+  // We use jQuery UI Dialog to show the add player form
+  // and should be able to reuse most of this code for editing
+  // existing players
+  $( "#newPlayerForm" ).dialog({
+     autoOpen: false,
+     modal: true,
+     appendTo: "#player",
+     width: "auto",
+     dialogClass: "addPlayer",
+     position: { my: "center", at: "center", of: window },
+     buttons: {
+       "Add player": function() {
+           addNewPlayer($("#name").val(), $("#address").val()); 
+           $( this ).dialog( "close" );
+       },
+       Cancel: function() {
+         $( this ).dialog( "close" );
+       }
+     },
+     open: function() {
+        $('.ui-widget-overlay').addClass('darker-overlay');
+     },
+     close: function() {
+       allFields = $( [] ).add( "#name" ).add( "#address" );
+       allFields.val( "" );
+       $('.ui-widget-overlay').addClass('darker-overlay');
+     }
+   });
+ 
+   $( "#new-player" )
+     .button()
+     .click(function() {
+       $( "#newPlayerForm" ).dialog( "open" );
+     });
 }
 
 // Resize the player whenever the window is resized.
@@ -119,7 +140,6 @@ function slideUpwards()
   $(this).find(".tools").slideUp(200);
 }
 
-
 function editPlayer(sender)
 {
 
@@ -156,14 +176,14 @@ function readPlayers()
   }
 
   var options = {
-    item: '<li><div class="playerLinkDiv"><div><a id="playerLink" contenteditable=false href="#" class="name playlist_button playerlink"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit" href="#">Edit</a><a class="tools-delete" href="#"">Delete</a></div></div></li>'
+    item: '<li><div class="playerLinkDiv"><div><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#"">Delete</a></div></div></li>'
   };
 
   var playerList = new List('playerlist', options, values);
   resetPlaylistAttributes();
 }
 
-function addNewPlayer()
+function addNewPlayer(name, url)
 {
   // TODO: Scrape the Bandcamp <head> to extract a reference to the playlist ID
   //       so we can embedd HTML5 players instead of full pages inside the
@@ -172,24 +192,22 @@ function addNewPlayer()
   //       different domains.
   if (Modernizr.localstorage)
   {
-    var form = document.getElementById("newPlayerForm");
-
     if (url.length == 0)
     {
       return;
     }
 
     var counter = parseInt(localStorage.getItem("webplayer.counter"));
-    if (form.elements["name"].value.length > 0)
+    if (name.length > 0)
     {
-      localStorage.setItem("webplayer.players." + counter+".name", form.elements["name"].value);
+      localStorage.setItem("webplayer.players." + counter+".name", name);
     }
     else
     {
       localStorage.setItem("webplayer.players." + counter+".name", "No name");
     }
     localStorage.setItem("webplayer.players." + counter+".added", new Date());
-    localStorage.setItem("webplayer.players." + counter+".url", form.elements["url"].value);
+    localStorage.setItem("webplayer.players." + counter+".url", url);
     localStorage.setItem("webplayer.counter", counter + 1);
   }
   readPlayers();
