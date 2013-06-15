@@ -29,8 +29,8 @@ function initialiseLocalStorage()
 
 function toggleTogglerAndForm()
 {
-  $("#newPlayerForm").trigger("reset");
-  $("#newPlayerForm").slideToggle(200);
+  $("#playerForm").trigger("reset");
+  $("#playerForm").slideToggle(200);
   $(".toggler").slideToggle(200);
 }
 
@@ -40,7 +40,7 @@ function initialiseEventHandlers()
   // We use jQuery UI Dialog to show the add player form
   // and should be able to reuse most of this code for editing
   // existing players
-  $( "#newPlayerForm" ).dialog({
+  $( "#playerForm" ).dialog({
      autoOpen: false,
      modal: true,
      appendTo: "#player",
@@ -88,7 +88,7 @@ function initialiseEventHandlers()
    $( "#new-player" )
      .button()
      .click(function() {
-       $( "#newPlayerForm" ).dialog( "open" );
+       $( "#playerForm" ).dialog( "open" );
      });
 }
 
@@ -140,7 +140,7 @@ function resetPlaylistAttributes()
   });
 
   $(".tools-edit").click(function(event) {
-    $("#newPlayerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
+    $("#playerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
   });
 
   // This binds actions to the new <li> elements that make them open the players
