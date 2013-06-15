@@ -4,9 +4,11 @@ $( document ).ready(function() {
   if (Modernizr.localstorage) {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
-    if (localStorage.length == 0)
+    if (localStorage.length == 0 || localStorage.getItem("webplayer.counter") == 0)
     {
       initialiseLocalStorage();
+      var iframe = document.getElementById("playerframe");
+      iframe.src="first.html";
     }
     readPlayers();
   }
