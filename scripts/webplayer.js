@@ -53,12 +53,30 @@ function initialiseEventHandlers()
            addNewPlayer($("#name").val(), $("#address").val()); 
            $( this ).dialog( "close" );
        },
+       "Edit player": function() {
+           editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
+           $( this ).dialog( "close" );
+       },
        Cancel: function() {
          $( this ).dialog( "close" );
        }
      },
      open: function() {
         $('.ui-widget-overlay').addClass('darker-overlay');
+        var id = $(this).data("id");
+        if (id != null)
+        {
+          $('.ui-button:contains(Edit player)').show()
+          $('.ui-button:contains(Add player)').hide()
+          $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
+          $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
+          $("#id").val(id);
+        }
+        else
+        {
+          $('.ui-button:contains(Add player)').show()
+          $('.ui-button:contains(Edit player)').hide()
+        }
      },
      close: function() {
        allFields = $( [] ).add( "#name" ).add( "#address" );
@@ -122,7 +140,7 @@ function resetPlaylistAttributes()
   });
 
   $(".tools-edit").click(function(event) {
-    editPlayer(event);
+    $("#newPlayerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
   });
 
   // This binds actions to the new <li> elements that make them open the players
@@ -141,17 +159,12 @@ function slideUpwards()
   $(this).find(".tools").slideUp(200);
 }
 
-function editPlayer(sender)
+function editPlayer(name, address, id)
 {
-
-  // TODO: Javascript prompts are ugly. Make this beautiful. fancybox?
-
-  var parentNode = sender.currentTarget.parentNode;
-  var name = prompt("Enter a name", parentNode.parentNode.childNodes.item(0).childNodes.item(0).textContent);
-    var key = parentNode.parentNode.childNodes.item(0).childNodes.item(2).textContent;
-  if (key != null && name != null)
+  if (id != null)
   {
-    localStorage.setItem("webplayer.players."+key+".name", name);
+    localStorage.setItem("webplayer.players."+id+".name", name);
+    localStorage.setItem("webplayer.players."+id+".url", address);
     readPlayers();
   }
 }
