@@ -131,3 +131,8 @@ div.tools
     opacity: 0.7;
     filter: "Alpha(Opacity=70)",
 }
+
+.ui-widget
+{
+  font-size: 1.0em !important
+}
