@@ -19,8 +19,8 @@ $( document ).ready(function() {
     alert("HTML5 localtstorage not supported =(")
   }
 
-  setPlayerDivDimensions();
   initialiseEventHandlers();
+  setPlayerDivDimensions();
 
 });
 
@@ -119,7 +119,7 @@ function loadPlayer(sender) {
 
 function setPlayerDivDimensions()
 {
-  var width = document.body.clientWidth;
+  var width = window.innerWidth;
   // playerList = 300px and has 2 x 10px paddings
   width = width - 320;
 
@@ -127,8 +127,8 @@ function setPlayerDivDimensions()
   $("#playerframe").css("width", width);
 
   // TODO: Set div and frame height more correctly than this hack.
-  $("#player").css("height", document.height);
-  $("#playerFrame").css("height", document.height);
+  $("#player").css("height", window.innerHeight);
+  $("#playerframe").css("height", window.innerHeight);
 }
 
 function resetPlaylistAttributes()
