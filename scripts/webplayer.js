@@ -98,7 +98,10 @@ function initialiseEventHandlers()
 
 // Resize the player whenever the window is resized.
 $(window).resize(function() {
-  setPlayerDivDimensions();
+  if ($("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
+  {
+    setPlayerDivDimensions();
+  }
 });
 
 function loadPlayer(sender) {
@@ -106,16 +109,43 @@ function loadPlayer(sender) {
   // TODO: Fix focus so <space> can pause
   var iframe = document.getElementById("playerframe");
   var purl = sender.currentTarget.parentNode.childNodes.item(1).textContent;
-  iframe.src = purl;
   if (purl.search("soundcloud.com") > 0)
   {
     // TODO: Autoplay on load
     iframe.src = "http://w.soundcloud.com/player/?url="+purl;
     soundcloudWidget = SC.Widget(iframe);
     soundcloudWidget.load(purl, {'auto_play': true});
+    $("#playerframe").css("height", "100%");
+    $("#playerframe").css("margin", "");
+    $("#playerframe").css("width", "100%");
+  }
+  if (purl.search("bandcamp.com/Embedded") > 0)
+  {
+    // This lets use dynamically choose the size of the embedded player, 
+    // given the size of the user's browser display height.
+    if (window.innerHeight > 700)
+    {
+      purl = purl.replace("$X", "large");
+      $("#playerframe").css("height", "600");
+      $("#playerframe").css("width", "550");
+    }
+    else
+    {
+      purl = purl.replace("$X", "medium");
+      $("#playerframe").css("height", "400");
+      $("#playerframe").css("width", "550");
+    }
+    $("#playerframe").css("margin", "auto");
+    $("#playerframe").css("position", "absolute");
+    $("#playerframe").css("top", "0");
+    $("#playerframe").css("bottom", "0");
+    $("#playerframe").css("left", "0");
+    $("#playerframe").css("right", "0");
+    iframe.src = purl;
   }
   document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(0).textContent;
 }
+
 
 function setPlayerDivDimensions()
 {
@@ -200,7 +230,7 @@ function readPlayers()
   resetPlaylistAttributes();
 }
 
-function addNewPlayer(name, url)
+function addNewPlayer(name, xurl)
 {
   // TODO: Scrape the Bandcamp <head> to extract a reference to the playlist ID
   //       so we can embedd HTML5 players instead of full pages inside the
@@ -209,25 +239,65 @@ function addNewPlayer(name, url)
   //       different domains.
   if (Modernizr.localstorage)
   {
-    if (url.length == 0)
+    if (xurl.length == 0)
     {
       return;
     }
 
-    var counter = parseInt(localStorage.getItem("webplayer.counter"));
-    if (name.length > 0)
+    if (xurl.search("bandcamp.com") > 0)
     {
-      localStorage.setItem("webplayer.players." + counter+".name", name);
+      var albumid = "";
+      $.ajax(
+        {
+          async: false, 
+          timeout: 1000, 
+          dataType: "jsonp", 
+          url: "http://api.bandcamp.com/api/url/1/info?key=vatnajokull&url="+xurl, 
+          success: function(d) 
+          { 
+            console.log(d); 
+            albumid = d.album_id; 
+
+            if (albumid != null)
+            {
+              // Controversial use of the Bandcamp API to retrieve a Bandcamp-specific player
+              yurl = "http://bandcamp.com/EmbeddedPlayer/album="+albumid+"/size=$X/bgcol=ffffff/linkcol=0687f5/notracklist=false/transparent=true/";
+              var counter = parseInt(localStorage.getItem("webplayer.counter"));
+              if (name.length > 0)
+              {
+                localStorage.setItem("webplayer.players." + counter+".name", name);
+              }
+              else
+              {
+                localStorage.setItem("webplayer.players." + counter+".name", "No name");
+              }
+              localStorage.setItem("webplayer.players." + counter+".added", new Date());
+              localStorage.setItem("webplayer.players." + counter+".url", yurl);
+              localStorage.setItem("webplayer.counter", counter + 1);
+              readPlayers();
+            }
+          }
+        }
+      ); 
     }
     else
     {
-      localStorage.setItem("webplayer.players." + counter+".name", "No name");
+  
+      var counter = parseInt(localStorage.getItem("webplayer.counter"));
+      if (name.length > 0)
+      {
+        localStorage.setItem("webplayer.players." + counter+".name", name);
+      }
+      else
+      {
+        localStorage.setItem("webplayer.players." + counter+".name", "No name");
+      }
+      localStorage.setItem("webplayer.players." + counter+".added", new Date());
+      localStorage.setItem("webplayer.players." + counter+".url", xurl);
+      localStorage.setItem("webplayer.counter", counter + 1);
+      readPlayers();
     }
-    localStorage.setItem("webplayer.players." + counter+".added", new Date());
-    localStorage.setItem("webplayer.players." + counter+".url", url);
-    localStorage.setItem("webplayer.counter", counter + 1);
   }
-  readPlayers();
   return false;
 }
 
