@@ -481,6 +481,48 @@ function populateLocalDatabase(retrievedData)
   }
 }
 
+function populateRemoteDatabase()
+{
+  if (localStorage.getItem("username") == null || localStorage.length < 5)
+  {
+    // Nothing to send to the remote database server
+    return;
+  }
+
+  var stringified = localStorageWithoutCredentials();
+
+  // POST request to store the current version of LocalStorage in the
+  // remote database
+  $.ajax(
+  {
+    type: "POST",
+    dataType: "jsonp",
+    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/postDB.cgi",
+    data: { "data": stringified, 
+            "dbname": localStorage.getItem("dbname"), 
+            "username": localStorage.getItem("username"), 
+            "password": localStorage.getItem("password"), 
+            "rev": localStorage.getItem("rev")}
+  }).success(function (returnedData) 
+  {
+    if (returnedData['code'] == "201")
+    {
+      // Update the revision id so we can correctly retrieve and store in the future
+      localStorage.setItem("rev", returnedData['new_revision']);
+    
+    }
+    else if (returnedData['code'] == "409")
+    {
+      // Incorrect revision ID was supplied, which means the databases are out of sync.
+      retrieveRemoteDatabase();
+    }
+  }).error(function (returnedData)
+  {
+    console.log("Save database failure.");
+    console.log(returnedData);
+  });
+}
+
 // ------------------- //
 // Auxiliary functions //
 // ------------------- //
@@ -557,4 +599,28 @@ function detectCollisions(local, remote)
     }
   }
   return collisions;
+}
+
+function localStorageWithoutCredentials()
+{
+  // We don't want to send this information to the cloud!
+
+  var u = localStorage.getItem("username");
+  var d = localStorage.getItem("dbname");
+  var p = localStorage.getItem("password");
+  var r = localStorage.getItem("rev");
+
+  localStorage.removeItem("username");
+  localStorage.removeItem("dbname");
+  localStorage.removeItem("password");
+  localStorage.removeItem("rev");
+
+  var s = JSON.stringify(localStorage);
+
+  localStorage.setItem("username", u);
+  localStorage.setItem("dbname", d);
+  localStorage.setItem("password", p);
+  localStorage.setItem("rev", r);
+  
+  return s;
 }
