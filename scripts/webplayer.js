@@ -5,7 +5,7 @@ $( document ).ready(function() {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
     login(convertDBName(localStorage.getItem("dbname")));
-    updatePlayerframe();
+    updatePlayerFrame();
     readPlayers();
   }
   else
@@ -482,9 +482,6 @@ function populateLocalDatabase(retrievedData)
     // The databases are already synchronised
     return;
   }
-  
-  toggleStatusMessage("#synchronising");
-  var stringified = localStorageWithoutCredentials();
 
   // Do collision detection so we know what to merge
   var oldLS = copyOfDatabase(localStorage);
@@ -521,7 +518,7 @@ function populateLocalDatabase(retrievedData)
   });
 
   // Update the user interface
-  updatePlayerframe();
+  updatePlayerFrame();
   readPlayers();
 
   // http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array
@@ -547,6 +544,7 @@ function populateRemoteDatabase()
     return;
   }
 
+  toggleStatusMessage("#synchronising");
   var stringified = localStorageWithoutCredentials();
 
   // POST request to store the current version of LocalStorage in the
@@ -568,6 +566,8 @@ function populateRemoteDatabase()
       // Update the revision id so we can correctly retrieve and store in the future
       localStorage.setItem("rev", returnedData['new_revision']);
     
+      // Tell the user synchronisation is complete.
+      toggleStatusMessage("#loggedin");
     }
     else if (returnedData['code'] == "409")
     {
@@ -712,7 +712,7 @@ function slideUpwards()
   $(this).find(".tools").slideUp(200);
 }
 
-function updatePlayerframe()
+function updatePlayerFrame()
 {
     if (localStorage.length == 0 || 
         localStorage.getItem("webplayer.counter") == 0)
