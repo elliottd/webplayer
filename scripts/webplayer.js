@@ -233,6 +233,7 @@ function editPlayer(name, address, id)
   {
     localStorage.setItem("webplayer.players."+id+".name", name);
     localStorage.setItem("webplayer.players."+id+".url", address);
+    populateRemoteDatabase();
   }
 }
 
@@ -308,6 +309,7 @@ function addNewPlayer(name, xurl)
               localStorage.setItem("webplayer.players." + counter+".added", new Date());
               localStorage.setItem("webplayer.players." + counter+".url", yurl);
               localStorage.setItem("webplayer.counter", counter + 1);
+              populateRemoteDatabase();
               readPlayers();
             }
           }
@@ -329,6 +331,7 @@ function addNewPlayer(name, xurl)
       localStorage.setItem("webplayer.players." + counter+".added", new Date());
       localStorage.setItem("webplayer.players." + counter+".url", xurl);
       localStorage.setItem("webplayer.counter", counter + 1);
+      populateRemoteDatabase();
       readPlayers();
     }
   }
@@ -345,6 +348,7 @@ function deletePlayer(sender)
       localStorage.removeItem("webplayer.players."+key+".name");
       localStorage.removeItem("webplayer.players."+key+".added");
       localStorage.removeItem("webplayer.players."+key+".url");
+      populateRemoteDatabase();
       readPlayers();
      }
   }
