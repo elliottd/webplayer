@@ -315,3 +315,94 @@ function deletePlayer(sender)
      }
   }
 }
+
+// --------------------------- //
+// Remote database interaction //
+// --------------------------- //
+
+function login(uname)
+{
+  // Retrieve authentication credentials for the user with
+  // a given username.
+
+  if (uname == null)
+  {
+    return;
+  }
+
+  if (localStorage.getItem("username") == null ||
+      convertDBName(localStorage.getItem("dbname")) != uname)
+  {
+    // Retrieve authentication details if there are none, or
+    // a different username is provided than the one we have credentials for.
+
+    clearCredentials();
+
+    // Send a POST request to the login server with the username. 
+    // If this operation is successful, save the authentication 
+    // credentials to LocalStorage and retrieve the remote database.
+
+    $.ajax({
+      type: "POST",
+      dataType: "jsonp",
+      url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/login.cgi",
+      data: { 'dbname' : uname }
+    }).success(function (returnedData) 
+    {
+      if (returnedData["code"] == "200")
+      {
+        console.log("Login success");
+        console.log(returnedData);
+        localStorage.setItem("username", returnedData["username"]);
+        localStorage.setItem("password", returnedData["password"]);
+        localStorage.setItem("dbname", returnedData["dbname"]);
+ 
+        // We have credentials for this user so synchronise databases
+        retrieveRemoteDatabase();
+      }
+      else
+      {
+        console.log("Login failure");
+        console.log(returnedData);      
+      }
+    }).error(function (returnedData)
+    {
+      console.log("Login failure");
+      console.log(returnedData);
+    });
+  }
+  else
+  {
+    // We have credentials for this user so synchronise databases
+    retrieveRemoteDatabase();
+  }
+}
+
+// ------------------- //
+// Auxiliary functions //
+// ------------------- //
+
+function convertDBName(name)
+{
+  // Cloudant doesn't allow certain characters so we need to convert them.
+  // @ -> _
+  // . -> -
+
+  if (name == null)
+  {
+    return;
+  }
+
+  var d = name;
+  d = d.replace(/-/g, ".");
+  d = d.replace("_", "@");
+  return d;
+}
+
+function clearCredentials()
+{
+  localStorage.removeItem("username");
+  localStorage.removeItem("dbname");
+  localStorage.removeItem("password");
+  localStorage.removeItem("rev");
+}
