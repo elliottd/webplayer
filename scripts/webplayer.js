@@ -378,6 +378,47 @@ function login(uname)
   }
 }
 
+function retrieveRemoteDatabase()
+{
+  // Retrieve database from the server with a POST request
+  $.ajax( 
+  {
+    type: "POST",
+    dataType: "jsonp",
+    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/retrieveDB.cgi",
+    data: { 'dbname': localStorage.getItem('dbname'), 
+            'username': localStorage.getItem('username'), 
+            'password': localStorage.getItem('password')}
+  }).success(function (returnedData) 
+  {
+    if (returnedData["code"] == null)
+    {
+      // An artefact of using the YAML::Syck::JSON parser on the server side is
+      // that we won't return a code if the data has been retrieved.
+
+      if (Object.keys(returnedData).length == 3)
+      {
+        // This was an empty database so populate the cloud from localhost.
+        localStorage.setItem("rev", returnedData['_rev']);
+        populateRemoteDatabase();
+      }
+      else
+      {
+        populateLocalDatabase(returnedData)
+      }
+    }
+    else
+    {
+      console.log("Retrieve failure");
+      console.log(returnedData);
+    }
+  }).error(function (returnedData)
+  {
+    console.log("Retrieve failure");
+    console.log(returnedData);
+  });
+}
+
 // ------------------- //
 // Auxiliary functions //
 // ------------------- //
