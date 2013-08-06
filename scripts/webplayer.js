@@ -419,6 +419,68 @@ function retrieveRemoteDatabase()
   });
 }
 
+function populateLocalDatabase(retrievedData)
+{
+
+  if (retrievedData['_rev'] == localStorage.getItem("rev"))
+  {
+    // The databases are already synchronised
+    return;
+  }
+
+  // Do collision detection so we know what to merge
+  var oldLS = copyOfDatabase(localStorage);
+  var remoteLS = copyOfDatabase(retrievedData);
+  var collisions = detectCollisions(oldLS, remoteLS);
+
+  var u = localStorage.getItem("username");
+  var p = localStorage.getItem("password");
+  var d = localStorage.getItem("dbname");
+  initialiseLocalStorage();
+  localStorage.setItem("rev", retrievedData['_rev']);
+  localStorage.setItem("username", u);
+  localStorage.setItem("password", p);
+  localStorage.setItem("dbname", d);
+  
+  // We don't want to store these items in the LocalStorage
+  delete retrievedData['_rev'];
+  delete retrievedData['_id'];
+  delete retrievedData['code'];
+
+  // Empty the current LocalStorage and add key-value pair in the retrievedData 
+  // to the HTML5 Localstorage.
+
+  $.each(retrievedData, function(k,v) { 
+    localStorage.setItem(k, v);
+  });
+
+  $.each(collisions, function(k,v) {
+    var counter = parseInt(localStorage.getItem("webplayer.counter"));
+    localStorage.setItem("webplayer.players." + counter+".name", v["webplayer.players." + k + ".name"]);
+    localStorage.setItem("webplayer.players." + counter+".added", v["webplayer.players." + k + ".added"]);
+    localStorage.setItem("webplayer.players." + counter+".url", v["webplayer.players." + k + ".url"]);
+    localStorage.setItem("webplayer.counter", counter + 1);
+  });
+
+  // Update the user interface
+  updatePlayerframe();
+  readPlayers();
+
+  // http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array
+  Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+  };
+
+  if (Object.size(collisions) > 0)
+  {
+    populateRemoteDatabase();
+  }
+}
+
 // ------------------- //
 // Auxiliary functions //
 // ------------------- //
@@ -446,4 +508,53 @@ function clearCredentials()
   localStorage.removeItem("dbname");
   localStorage.removeItem("password");
   localStorage.removeItem("rev");
+}
+
+function copyOfDatabase(db)
+{
+  var current = $.extend(true, {}, db);
+
+  var i;
+
+  var oldObjects = {};
+
+  for (i in current)
+  {
+    var splitI = i.split(".");
+    if (splitI.length == 4)
+    {
+      var n = splitI[2];
+      if (oldObjects[n] == null)
+      {
+        oldObjects[n] = {};
+      }
+      oldObjects[n][i] = current[i];
+    }
+  }
+
+  return oldObjects;
+}
+
+function detectCollisions(local, remote)
+{
+  var n;
+  var collisions = {};
+  for (n in remote)
+  {
+    // Iterate over all entries in the master version of this database
+    if (local[n] != null)
+    {
+      // This is a duplicate entry. Let's check if there is a collision
+      if (remote[n]["webplayer.players." + n + ".url"] != local[n]["webplayer.players." + n + ".url"])
+      {
+        // Check whether the entries were made on different dates
+        if (remote[n]["webplayer.players." + n + ".added"] != local[n]["webplayer.players." + n + ".added"])
+        {
+          // This was a new entry made when the local LocalStorage was out of sync.
+          collisions[n] = local[n];
+        }
+      }
+    }
+  }
+  return collisions;
 }
