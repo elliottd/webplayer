@@ -368,6 +368,11 @@ function login(uname)
     return;
   }
 
+  // Update the user interface
+  toggleStatusMessage("#loggingin", uname);
+  toggleLogoutButton();
+  toggleRefreshButton();
+
   if (localStorage.getItem("username") == null ||
       convertDBName(localStorage.getItem("dbname")) != uname)
   {
@@ -401,11 +406,17 @@ function login(uname)
       else
       {
         console.log("Login failure");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", returnedData['message']);
         console.log(returnedData);      
       }
     }).error(function (returnedData)
     {
       console.log("Login failure");
+      toggleLogoutButton();
+      toggleRefreshButton();
+      toggleStatusMessage("#failure", returnedData['message']);
       console.log(returnedData);
     });
   }
@@ -418,6 +429,9 @@ function login(uname)
 
 function retrieveRemoteDatabase()
 {
+  // Tell the user the databases are synchronising
+  toggleStatusMessage("#synchronising")
+
   // Retrieve database from the server with a POST request
   $.ajax( 
   {
@@ -444,15 +458,18 @@ function retrieveRemoteDatabase()
       {
         populateLocalDatabase(returnedData)
       }
+      toggleStatusMessage("#loggedin")
     }
     else
     {
       console.log("Retrieve failure");
+      toggleStatusMessage("#failure");
       console.log(returnedData);
     }
   }).error(function (returnedData)
   {
     console.log("Retrieve failure");
+    toggleStatusMessage("#failure");
     console.log(returnedData);
   });
 }
@@ -465,6 +482,9 @@ function populateLocalDatabase(retrievedData)
     // The databases are already synchronised
     return;
   }
+  
+  toggleStatusMessage("#synchronising");
+  var stringified = localStorageWithoutCredentials();
 
   // Do collision detection so we know what to merge
   var oldLS = copyOfDatabase(localStorage);
