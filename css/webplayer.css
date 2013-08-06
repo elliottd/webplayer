@@ -78,10 +78,21 @@ div.tools
   float: left;
   width: 320px;
   background-color: #4c4c4c;
-  height: 100%;
+  height: 85%;
   position: fixed;
   text-align: center;
   overflow-y: auto;
+}
+
+.authenticate
+{
+  float: left;
+  width: 320px;
+  background-color: #4c4c4c;
+  position: fixed;
+  text-align: center;
+  height: 15%;
+  bottom: 0px;
 }
 
 .player
@@ -134,4 +145,9 @@ div.tools
 .ui-widget
 {
   font-size: 1.0em !important
+}
+
+.authstatus
+{
+  display: inline-block;
 }

@@ -4,12 +4,8 @@ $( document ).ready(function() {
   if (Modernizr.localstorage) {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
-    if (localStorage.length == 0 || localStorage.getItem("webplayer.counter") == 0)
-    {
-      initialiseLocalStorage();
-      var iframe = document.getElementById("playerframe");
-      iframe.src="first.html";
-    }
+    login(convertDBName(localStorage.getItem("dbname")));
+    updatePlayerframe();
     readPlayers();
   }
   else
@@ -24,76 +20,156 @@ $( document ).ready(function() {
 
 });
 
-function initialiseLocalStorage()
-{
-  localStorage.setItem('webplayer.counter', 0);
-}
-
-function toggleTogglerAndForm()
-{
-  $("#playerForm").trigger("reset");
-  $("#playerForm").slideToggle(200);
-  $(".toggler").slideToggle(200);
-}
+// -------------- //
+// Event Handlers //
+// -------------- //
 
 function initialiseEventHandlers()
 {
+  initialiseLogoutButton();
+  initialiseRefreshButton();
+  initialiseNewPlayerForm();
+  initialiseLoginField();
+}
 
+function initialiseNewPlayerForm()
+{
   // We use jQuery UI Dialog to show the add player form
   // and should be able to reuse most of this code for editing
   // existing players
-  $( "#playerForm" ).dialog({
-     autoOpen: false,
-     modal: true,
-     appendTo: "#player",
-     width: "auto",
-     dialogClass: "addPlayer",
-     position: { my: "center", at: "center", of: window },
-     resizable: false,
-     buttons: {
-       "Add player": function() {
-           addNewPlayer($("#name").val(), $("#address").val()); 
-           $( this ).dialog( "close" );
-       },
-       "Edit player": function() {
-           editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
-           readPlayers();
-           $( this ).dialog( "close" );
-       },
-       Cancel: function() {
-         $( this ).dialog( "close" );
+  $( "#playerForm" ).dialog(
+  {
+    autoOpen: false,
+    modal: true,
+    appendTo: "#player",
+    width: "auto",
+    dialogClass: "addPlayer",
+    position: { my: "center", at: "center", of: window },
+    resizable: false,
+    buttons: {
+      "Add player": function() {
+          addNewPlayer($("#name").val(), $("#address").val()); 
+          $( this ).dialog( "close" );
+      },
+      "Edit player": function() {
+          editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
+          readPlayers();
+          $( this ).dialog( "close" );
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+      }
+    },
+    open: function() {
+       $('.ui-widget-overlay').addClass('darker-overlay');
+       var id = $(this).data("id");
+       if (id == null)
+       {
+         $("#address").val("");
+         $("#name").val("");
+         $("#id").val("");
+         $('.ui-button:contains(Add player)').show()
+         $('.ui-button:contains(Edit player)').hide()
        }
-     },
-     open: function() {
-        $('.ui-widget-overlay').addClass('darker-overlay');
-        var id = $(this).data("id");
-        if (id == null)
-        {
-          $("#address").val("");
-          $("#name").val("");
-          $("#id").val("");
-          $('.ui-button:contains(Add player)').show()
-          $('.ui-button:contains(Edit player)').hide()
+       else
+       {
+         $('.ui-button:contains(Edit player)').show()
+         $('.ui-button:contains(Add player)').hide()
+         $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
+         $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
+         $("#id").val(id);
         }
-        else
-        {
-          $('.ui-button:contains(Edit player)').show()
-          $('.ui-button:contains(Add player)').hide()
-          $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
-          $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
-          $("#id").val(id);
-        }
-     },
-     close: function() {
-       $('.ui-widget-overlay').removeClass('darker-overlay');
-     }
-   });
- 
-   $( "#new-player" )
-     .button()
-     .click(function() {
-       $( "#playerForm" ).data("id",null).dialog( "open" );
-     });
+    },
+    close: function() {
+      $('.ui-widget-overlay').removeClass('darker-overlay');
+    }
+  });
+   
+  $( "#new-player" ).button().click(function() {
+    $( "#playerForm" ).data("id",null).dialog( "open" );
+  });
+}
+
+function initialiseLoginField()
+{
+  // Set the event handler for the login field
+
+  $( "#authenticate" ).keypress(function (e) {
+    if (e.which == 13) 
+    {
+      var fieldName = e.target.value;
+        
+      if (localStorage.getItem("username") == null || 
+          convertDBName(localStorage.getItem("dbname")) != fieldName)
+      {
+        login(fieldName);
+      }
+      else
+      {
+        retrieveRemoteDatabase();
+      }
+        
+      return false;
+    }
+  }); 
+}
+
+function initialiseLogoutButton()
+{
+  // When a user clicks logout:
+  // 1) reset the authenticate field
+  // 2) reset all status messages
+  // 3) hide logout button; show authenticate field
+  // 4) clear LocalStorage
+  
+  $("#logout").button().click(function() {
+    $("#authenticate").val("");
+    toggleStatusMessage(null);
+    toggleLogoutButton();
+    toggleRefreshButton();
+    initialiseLocalStorage();
+    readPlayers();
+    updatePlayerFrame();
+  });
+}
+
+function initialiseRefreshButton()
+{
+  // When a user clicks Refresh retrieve the latest version of the database
+  
+  $("#refresh").button().click(function() {
+    retrieveRemoteDatabase();
+  });
+}
+
+function initialiseLocalStorage()
+{
+  localStorage.clear();
+  localStorage.setItem('webplayer.counter', 0);
+}
+
+function setPlaylistEventHandlers()
+{
+  $("li").hoverIntent({
+    over: slideDownwards,
+    interval: 1000,
+    out: slideUpwards
+  });
+
+  $(".tools-delete").click(function(event) {
+    deletePlayer(event);
+  });
+
+  // TODO: Fix this selector. It is too easy to break.
+
+  $(".tools-edit").click(function(event) {
+    $("#playerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
+  });
+
+  // This binds actions to the new <li> elements that make them open the players
+  $(".playerlink").on("click", function(event) {
+    loadPlayer(event);
+  });
 }
 
 // Resize the player whenever the window is resized.
@@ -103,6 +179,10 @@ $(window).resize(function() {
     setPlayerDivDimensions();
   }
 });
+
+// ------------------ //
+// Local Interactions //
+// ------------------ //
 
 function loadPlayer(sender) {
   // Load a player into the iframe
@@ -147,52 +227,6 @@ function loadPlayer(sender) {
 }
 
 
-function setPlayerDivDimensions()
-{
-  var width = window.innerWidth;
-  // playerList = 300px and has 2 x 10px paddings
-  width = width - 320;
-
-  $("#player").css("width", width);
-  $("#playerframe").css("width", width);
-
-  // TODO: Set div and frame height more correctly than this hack.
-  $("#player").css("height", window.innerHeight);
-  $("#playerframe").css("height", window.innerHeight);
-}
-
-function resetPlaylistAttributes()
-{
-  $("li").hoverIntent({
-    over: slideDownwards,
-    interval: 1000,
-    out: slideUpwards
-  });
-
-  $(".tools-delete").click(function(event) {
-    deletePlayer(event);
-  });
-
-  $(".tools-edit").click(function(event) {
-    $("#playerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
-  });
-
-  // This binds actions to the new <li> elements that make them open the players
-  $(".playerlink").on("click", function(event) {
-    loadPlayer(event);
-  });
-}
-
-function slideDownwards()
-{
-  $(this).find(".tools").slideDown(200);
-}
-
-function slideUpwards()
-{
-  $(this).find(".tools").slideUp(200);
-}
-
 function editPlayer(name, address, id)
 {
   if (id != null)
@@ -227,7 +261,7 @@ function readPlayers()
   };
 
   var playerList = new List('playerlist', options, values);
-  resetPlaylistAttributes();
+  setPlaylistEventHandlers();
 }
 
 function addNewPlayer(name, xurl)
@@ -623,4 +657,106 @@ function localStorageWithoutCredentials()
   localStorage.setItem("rev", r);
   
   return s;
+}
+
+
+// ---------- //
+// UI changes //
+// ---------- //
+
+function setPlayerDivDimensions()
+{
+  var width = window.innerWidth;
+  // playerList = 300px and has 2 x 10px paddings
+  width = width - 320;
+
+  $("#player").css("width", width);
+  $("#playerframe").css("width", width);
+
+  // TODO: Set div and frame height more correctly than this hack.
+  $("#player").css("height", window.innerHeight);
+  $("#playerframe").css("height", window.innerHeight);
+}
+
+function slideDownwards()
+{
+  $(this).find(".tools").slideDown(200);
+}
+
+function slideUpwards()
+{
+  $(this).find(".tools").slideUp(200);
+}
+
+function updatePlayerframe()
+{
+    if (localStorage.length == 0 || 
+        localStorage.getItem("webplayer.counter") == 0)
+    {
+      initialiseLocalStorage();
+      var iframe = document.getElementById("playerframe");
+      iframe.src="first.html";
+    }
+    else
+    {
+      var iframe = document.getElementById("playerframe");
+      iframe.src=""; 
+    }
+}
+
+$(window).resize(function() {
+  // Resize the player whenever the window is resized.
+  if ($("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
+  {
+    setPlayerDivDimensions();
+  }
+});
+
+function toggleRefreshButton()
+{
+  if ($("#refresh").css("display") == "inline-block")
+  {
+    $("#refresh").css("display", "none");
+  }
+  else
+  {
+    $("#refresh").css("display", "inline-block");
+  }
+}
+
+function toggleLogoutButton()
+{
+  if ($("#logout").css("display") == "inline-block")
+  {
+    $("#logout").css("display", "none");
+    $("#authenticate").css("display", "inline-block");
+  }
+  else
+  {
+    $("#logout").css("display", "inline-block");
+    $("#authenticate").css("display", "none");
+  }
+}
+
+function toggleStatusMessage(toEnable, optionalValue)
+{
+  // Automatically sets all status messages to display: none;
+  // and sets toEnable to display: block;
+
+  $("#loggingin").css("display", "none");
+  $("#synchronising").css("display", "none");
+  $("#loggedin").css("display", "none");
+  $("#failure").css("display", "none");
+  $("#username").css("display", "none");
+
+  if (toEnable != null)
+  {
+    $(toEnable).css("display", "block");
+    $("#username").css("display", "block");
+    $("#username").text(convertDBName(localStorage.getItem("dbname")));
+    if (optionalValue != null)
+    {
+      $(toEnable).text(optionalValue);
+    }
+  }
 }
