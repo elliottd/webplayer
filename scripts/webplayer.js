@@ -88,6 +88,21 @@ function initialiseNewPlayerForm()
   $( "#new-player" ).button().click(function() {
     $( "#playerForm" ).data("id",null).dialog( "open" );
   });
+
+  $('#name').keydown(function (e) {
+    if (e.which == 13) {
+      // just trigger the submit handler
+          addNewPlayer($("#name").val(), $("#address").val()); 
+          $( "#playerForm" ).dialog( "close" );
+    }
+  });
+  $('#address').keydown(function (e) {
+    if (e.which == 13) {
+      // just trigger the submit handler
+          addNewPlayer($("#name").val(), $("#address").val()); 
+          $( "#playerForm" ).dialog( "close" );
+    }
+  });
 }
 
 function initialiseLoginField()
