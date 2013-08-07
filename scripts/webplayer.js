@@ -124,6 +124,7 @@ function initialiseLogoutButton()
   
   $("#logout").button().click(function() {
     $("#authenticate").val("");
+    $("#username").text("");
     toggleStatusMessage(null);
     toggleLogoutButton();
     toggleRefreshButton();
@@ -171,14 +172,6 @@ function setPlaylistEventHandlers()
     loadPlayer(event);
   });
 }
-
-// Resize the player whenever the window is resized.
-$(window).resize(function() {
-  if ($("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
-  {
-    setPlayerDivDimensions();
-  }
-});
 
 // ------------------ //
 // Local Interactions //
@@ -369,7 +362,7 @@ function login(uname)
   }
 
   // Update the user interface
-  toggleStatusMessage("#loggingin", uname);
+  toggleStatusMessage("#loggingin");
   toggleLogoutButton();
   toggleRefreshButton();
 
@@ -728,14 +721,6 @@ function updatePlayerFrame()
     }
 }
 
-$(window).resize(function() {
-  // Resize the player whenever the window is resized.
-  if ($("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
-  {
-    setPlayerDivDimensions();
-  }
-});
-
 function toggleRefreshButton()
 {
   if ($("#refresh").css("display") == "inline-block")
@@ -784,3 +769,12 @@ function toggleStatusMessage(toEnable, optionalValue)
     }
   }
 }
+
+// Resize the player whenever the window is resized.
+$(window).resize(function() {
+  if ($("#playerframe").src != null && $("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
+  {
+    setPlayerDivDimensions();
+  }
+});
+
