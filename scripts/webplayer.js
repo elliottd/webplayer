@@ -377,7 +377,7 @@ function login(uname)
   }
 
   // Update the user interface
-  toggleStatusMessage("#loggingin");
+  toggleStatusMessage("#loggingin","" ,uname);
   toggleLogoutButton();
   toggleRefreshButton();
 
@@ -397,35 +397,39 @@ function login(uname)
       type: "POST",
       dataType: "jsonp",
       url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/login.cgi",
-      data: { 'dbname' : uname }
-    }).success(function (returnedData) 
-    {
-      if (returnedData["code"] == "200")
-      {
-        console.log("Login success");
-        console.log(returnedData);
-        localStorage.setItem("username", returnedData["username"]);
-        localStorage.setItem("password", returnedData["password"]);
-        localStorage.setItem("dbname", returnedData["dbname"]);
- 
-        // We have credentials for this user so synchronise databases
-        retrieveRemoteDatabase();
+      data: { 'dbname' : uname },
+      statusCode: {
+        200: function(returnedData) {
+          console.log("200: Login success");
+          console.log(returnedData);
+          localStorage.setItem("username", returnedData["username"]);
+          localStorage.setItem("password", returnedData["password"]);
+          localStorage.setItem("dbname", returnedData["dbname"]);
+          // We have credentials for this user so synchronise databases
+          retrieveRemoteDatabase();
+        },
+        400: function(returnedData) {
+          console.log("400: Revision or request invalid");
+          toggleLogoutButton();
+          toggleRefreshButton();
+          toggleStatusMessage("#failure", returnedData['message']);
+          console.log(returnedData);      
+        },
+        409: function(returnedData) {
+          console.log("409: Conflict");
+          toggleLogoutButton();
+          toggleRefreshButton();
+          toggleStatusMessage("#failure", returnedData['message']);
+          console.log(returnedData);      
+        },
+        500: function(returnedData) {
+          console.log("500: Server-side failure");
+          toggleLogoutButton();
+          toggleRefreshButton();
+          toggleStatusMessage("#failure", "Server-side failure");
+          console.log(returnedData);
+        }
       }
-      else
-      {
-        console.log("Login failure");
-        toggleLogoutButton();
-        toggleRefreshButton();
-        toggleStatusMessage("#failure", returnedData['message']);
-        console.log(returnedData);      
-      }
-    }).error(function (returnedData)
-    {
-      console.log("Login failure");
-      toggleLogoutButton();
-      toggleRefreshButton();
-      toggleStatusMessage("#failure", returnedData['message']);
-      console.log(returnedData);
     });
   }
   else
@@ -448,39 +452,115 @@ function retrieveRemoteDatabase()
     url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/retrieveDB.cgi",
     data: { 'dbname': localStorage.getItem('dbname'), 
             'username': localStorage.getItem('username'), 
-            'password': localStorage.getItem('password')}
-  }).success(function (returnedData) 
-  {
-    if (returnedData["code"] == null)
-    {
-      // An artefact of using the YAML::Syck::JSON parser on the server side is
-      // that we won't return a code if the data has been retrieved.
-
-      if (Object.keys(returnedData).length == 3)
-      {
-        // This was an empty database so populate the cloud from localhost.
-        localStorage.setItem("rev", returnedData['_rev']);
-        populateRemoteDatabase();
+            'password': localStorage.getItem('password')},
+    statusCode: {
+      200: function(returnedData) {
+        console.log("200: Retrieve success");
+        var data = returnedData['data'];
+        if (Object.keys(data).length == 3)
+        {
+          // This was an empty database so populate the cloud from localhost.
+          localStorage.setItem("rev", data['_rev']);
+          populateRemoteDatabase();
+        }
+        else
+        {
+          populateLocalDatabase(data)
+        }
+        toggleStatusMessage("#loggedin")
+      },
+      400: function(returnedData) {
+        console.log("400: Revision or request invalid");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", returnedData['message']);
+        console.log(returnedData);      
+      },
+      409: function(returnedData) {
+        console.log("409: Conflict");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", returnedData['message']);
+        console.log(returnedData);      
+      },
+      500: function(returnedData) {
+        console.log("500: Server-side failure");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", "Server-side failure");
+        console.log(returnedData);
       }
-      else
-      {
-        populateLocalDatabase(returnedData)
-      }
-      toggleStatusMessage("#loggedin")
     }
-    else
-    {
-      console.log("Retrieve failure");
-      toggleStatusMessage("#failure");
-      console.log(returnedData);
-    }
-  }).error(function (returnedData)
-  {
-    console.log("Retrieve failure");
-    toggleStatusMessage("#failure");
-    console.log(returnedData);
   });
 }
+
+function populateRemoteDatabase()
+{
+  if (localStorage.getItem("username") == null || localStorage.length < 5)
+  {
+    // Nothing to send to the remote database server
+    return;
+  }
+
+  toggleStatusMessage("#synchronising");
+  var stringified = localStorageWithoutCredentials();
+
+  // POST request to store the current version of LocalStorage in the
+  // remote database
+  $.ajax(
+  {
+    type: "POST",
+    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/postDB.cgi",
+    data: { "data": stringified, 
+            "dbname": localStorage.getItem("dbname"), 
+            "username": localStorage.getItem("username"), 
+            "password": localStorage.getItem("password"), 
+            "rev": localStorage.getItem("rev")},
+    }).done(function(returnedData) {
+      console.log(returnedData);
+      console.log(returnedData['code']);
+      
+      switch (returnedData['code'])
+      {
+      case "201": {
+        console.log("201: Post success");
+        // Update the revision id so we can correctly retrieve and store in the future
+        localStorage.setItem("rev", returnedData['new_revision']);
+    
+        // Tell the user synchronisation is complete.
+        toggleStatusMessage("#loggedin");
+      };
+      break;
+      case 400: {
+        console.log("400: Revision or request invalid");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", returnedData['message']);
+        console.log(returnedData);      
+      };
+      break;
+      case 409: {
+        console.log("409: Conflict");
+        // Incorrect revision ID was supplied, which means the databases are out of sync.
+        retrieveRemoteDatabase();
+      };
+      break;
+      case 500: {
+        console.log("500: Server-side failure");
+        toggleLogoutButton();
+        toggleRefreshButton();
+        toggleStatusMessage("#failure", "Server-side failure");
+        console.log(returnedData);
+      };
+      break;
+      default: {
+        console.log("default");
+      }
+      break;
+    }
+  });
+}
+
 
 function populateLocalDatabase(retrievedData)
 {
@@ -542,51 +622,6 @@ function populateLocalDatabase(retrievedData)
   {
     populateRemoteDatabase();
   }
-}
-
-function populateRemoteDatabase()
-{
-  if (localStorage.getItem("username") == null || localStorage.length < 5)
-  {
-    // Nothing to send to the remote database server
-    return;
-  }
-
-  toggleStatusMessage("#synchronising");
-  var stringified = localStorageWithoutCredentials();
-
-  // POST request to store the current version of LocalStorage in the
-  // remote database
-  $.ajax(
-  {
-    type: "POST",
-    dataType: "jsonp",
-    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/postDB.cgi",
-    data: { "data": stringified, 
-            "dbname": localStorage.getItem("dbname"), 
-            "username": localStorage.getItem("username"), 
-            "password": localStorage.getItem("password"), 
-            "rev": localStorage.getItem("rev")}
-  }).success(function (returnedData) 
-  {
-    if (returnedData['code'] == "201")
-    {
-      // Update the revision id so we can correctly retrieve and store in the future
-      localStorage.setItem("rev", returnedData['new_revision']);
-    
-      // Tell the user synchronisation is complete.
-      toggleStatusMessage("#loggedin");
-    }
-    else if (returnedData['code'] == "409")
-    {
-      // Incorrect revision ID was supplied, which means the databases are out of sync.
-      retrieveRemoteDatabase();
-    }
-  }).error(function (returnedData)
-  {
-    console.log("Save database failure.");
-    console.log(returnedData);
-  });
 }
 
 // ------------------- //
@@ -762,7 +797,7 @@ function toggleLogoutButton()
   }
 }
 
-function toggleStatusMessage(toEnable, optionalValue)
+function toggleStatusMessage(toEnable, optionalValue, uname)
 {
   // Automatically sets all status messages to display: none;
   // and sets toEnable to display: block;
@@ -777,7 +812,7 @@ function toggleStatusMessage(toEnable, optionalValue)
   {
     $(toEnable).css("display", "block");
     $("#username").css("display", "block");
-    $("#username").text(convertDBName(localStorage.getItem("dbname")));
+    $("#username").text(uname);
     if (optionalValue != null)
     {
       $(toEnable).text(optionalValue);
