@@ -394,12 +394,14 @@ function login(uname)
     // credentials to LocalStorage and retrieve the remote database.
 
     $.ajax({
-      type: "POST",
+      type: "GET",
       dataType: "jsonp",
       url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/login.cgi",
       data: { 'dbname' : uname },
-      statusCode: {
-        200: function(returnedData) {
+    }).done(function(returnedData) {
+      var code = returnedData['code'];
+      if (code == '200') 
+      {
           console.log("200: Login success");
           console.log(returnedData);
           localStorage.setItem("username", returnedData["username"]);
@@ -407,28 +409,30 @@ function login(uname)
           localStorage.setItem("dbname", returnedData["dbname"]);
           // We have credentials for this user so synchronise databases
           retrieveRemoteDatabase();
-        },
-        400: function(returnedData) {
+      }
+      else if(code == '400')
+      {
           console.log("400: Revision or request invalid");
           toggleLogoutButton();
           toggleRefreshButton();
           toggleStatusMessage("#failure", returnedData['message']);
           console.log(returnedData);      
-        },
-        409: function(returnedData) {
+      }
+      else if (code == '409')
+      {
           console.log("409: Conflict");
           toggleLogoutButton();
           toggleRefreshButton();
           toggleStatusMessage("#failure", returnedData['message']);
           console.log(returnedData);      
-        },
-        500: function(returnedData) {
+      }
+      else if (code == '500')
+      {
           console.log("500: Server-side failure");
           toggleLogoutButton();
           toggleRefreshButton();
           toggleStatusMessage("#failure", "Server-side failure");
           console.log(returnedData);
-        }
       }
     });
   }
@@ -447,14 +451,19 @@ function retrieveRemoteDatabase()
   // Retrieve database from the server with a POST request
   $.ajax( 
   {
-    type: "POST",
+    type: "GET",
     dataType: "jsonp",
     url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/retrieveDB.cgi",
+    crossDomain: "true",
     data: { 'dbname': localStorage.getItem('dbname'), 
             'username': localStorage.getItem('username'), 
-            'password': localStorage.getItem('password')},
-    statusCode: {
-      200: function(returnedData) {
+            'password': localStorage.getItem('password')}
+  }).done(function(returnedData) {
+    console.log(returnedData);
+    var code = returnedData['code'];
+    console.log(code);
+    if (code == '200')
+    {
         console.log("200: Retrieve success");
         var data = returnedData['data'];
         if (Object.keys(data).length == 3)
@@ -467,29 +476,31 @@ function retrieveRemoteDatabase()
         {
           populateLocalDatabase(data)
         }
-        toggleStatusMessage("#loggedin")
-      },
-      400: function(returnedData) {
+        toggleStatusMessage("#loggedin");
+    }
+    else if (code == '400')
+    {
         console.log("400: Revision or request invalid");
         toggleLogoutButton();
         toggleRefreshButton();
         toggleStatusMessage("#failure", returnedData['message']);
-        console.log(returnedData);      
-      },
-      409: function(returnedData) {
+        console.log(returnedData);     
+    }
+    else if (code == '409')
+    {
         console.log("409: Conflict");
         toggleLogoutButton();
         toggleRefreshButton();
         toggleStatusMessage("#failure", returnedData['message']);
         console.log(returnedData);      
-      },
-      500: function(returnedData) {
+    }
+    else if (code == '500')
+    {
         console.log("500: Server-side failure");
         toggleLogoutButton();
         toggleRefreshButton();
         toggleStatusMessage("#failure", "Server-side failure");
         console.log(returnedData);
-      }
     }
   });
 }
@@ -510,54 +521,52 @@ function populateRemoteDatabase()
   $.ajax(
   {
     type: "POST",
-    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/postDB.cgi",
-    data: { "data": stringified, 
+    url: "http://homepages.inf.ed.ac.uk/cgi/postDB.cgi",
+    dataType: "json",
+    data: { "data": stringified , 
             "dbname": localStorage.getItem("dbname"), 
             "username": localStorage.getItem("username"), 
             "password": localStorage.getItem("password"), 
-            "rev": localStorage.getItem("rev")},
-    }).done(function(returnedData) {
-      console.log(returnedData);
-      console.log(returnedData['code']);
-      
-      switch (returnedData['code'])
+            "rev": localStorage.getItem("rev"),
+            "callback": "callback"}
+    }
+  }).complete(function(jqXHR, returnedData) {
+      var returnedData = jqXHR.responseText;
+      returnedData = returnedData.replace("callback(", "");
+      returnedData = returnedData.replace(")", "");
+      returnedData = JSON.parse(returnedData);
+      var code = returnedData['code'];
+      if (code == '201')
       {
-      case "201": {
         console.log("201: Post success");
         // Update the revision id so we can correctly retrieve and store in the future
         localStorage.setItem("rev", returnedData['new_revision']);
     
         // Tell the user synchronisation is complete.
         toggleStatusMessage("#loggedin");
-      };
-      break;
-      case 400: {
+      }
+      else if (code == '400')
+      {
         console.log("400: Revision or request invalid");
         toggleLogoutButton();
         toggleRefreshButton();
         toggleStatusMessage("#failure", returnedData['message']);
         console.log(returnedData);      
-      };
-      break;
-      case 409: {
+      }
+      else if (code == '409')
+      {
         console.log("409: Conflict");
         // Incorrect revision ID was supplied, which means the databases are out of sync.
         retrieveRemoteDatabase();
-      };
-      break;
-      case 500: {
+      }
+      else if (code == '500')
+      {
         console.log("500: Server-side failure");
         toggleLogoutButton();
         toggleRefreshButton();
         toggleStatusMessage("#failure", "Server-side failure");
         console.log(returnedData);
-      };
-      break;
-      default: {
-        console.log("default");
       }
-      break;
-    }
   });
 }
 
@@ -722,10 +731,10 @@ function localStorageWithoutCredentials()
   localStorage.setItem("dbname", d);
   localStorage.setItem("password", p);
   localStorage.setItem("rev", r);
-  
+
+  s = encodeURIComponent(s);
   return s;
 }
-
 
 // ---------- //
 // UI changes //
@@ -827,4 +836,5 @@ $(window).resize(function() {
     setPlayerDivDimensions();
   }
 });
+
 
