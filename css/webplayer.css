@@ -43,14 +43,23 @@ div.tools
   clear: both;
 }
 
-.playerframe
+.player
 {
-  height: 800px;
-  border: 0;
-  display: block;
-  width: 100%;
+  background-color: #ecebe8;
+  left: 320px;
+  float: left;
+  width: 99%;
+  height: 99%;
+  position:fixed;
 }
 
+.playerframe
+{
+  max-height: 99%;
+  height: 800px;
+  border: 0;
+  width: 99%;
+}
 .filter
 {
   padding-top: 10px;
@@ -73,36 +82,44 @@ div.tools
   text-align:left;
 }
 
-.playerlist
+.sidebar
 {
   float: left;
   width: 320px;
   background-color: #4c4c4c;
-  height: 85%;
-  position: fixed;
+}
+
+.playerlist
+{
+  background-color: #4c4c4c;
   text-align: center;
-  overflow-y: auto;
+  position: fixed;
+  height: 69%;
+  top: 96px;
+  width: 320px;
+  padding-bottom: 4px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.controllers
+{
+  width: 320px;
+  text-align: center;
+  background-color: #4c4c4c;
+  position: fixed;
+  padding-bottom: 8px;
 }
 
 .authenticate
 {
-  float: left;
   width: 320px;
   background-color: #4c4c4c;
   position: fixed;
   text-align: center;
-  height: 15%;
   bottom: 0px;
 }
 
-.player
-{
-  float: left;
-  background-color: #ecebe8;
-  position: relative;
-  left: 320px;
-  width: 100%;
-}
 
 .rounded_input
 {

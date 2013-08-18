@@ -17,26 +17,31 @@
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   </head>
   <body>
-    <div id="playerlist" class="playerlist">
+    <div>
+    <div id="sidebar" class="sidebar">
+      <div id="controllers" class="controllers">
+        <button id="new-player" class="ui-widget">New player</button>
+        <!-- This is only visible when you click the New Player button or an Edit button -->
+        <div id="playerForm" title="Add a new player" style="display: none;">
+          <form id="formData">
+            <fieldset style="border: 0">
+              <input type="text" name="address" id="address" value="" class="text ui-widget-content ui-corner-all" placeholder=" Address" size="50"/><br/>
+              <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" placeholder=" Name" size="50"/>
+              <input type="hidden" name="id" id="id"/>
+            </fieldset>
+          </form>
+        </div>
 
-      <button id="new-player" class="ui-widget">New player</button>
-      <!-- This is only visible when you click the New Player button or an Edit button -->
-      <div id="playerForm" title="Add a new player" style="display: none;">
-        <form id="formData">
-          <fieldset style="border: 0">
-            <input type="text" name="address" id="address" value="" class="text ui-widget-content ui-corner-all" placeholder=" Address" size="50"/><br/>
-            <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" placeholder=" Name" size="50"/>
-            <input type="hidden" name="id" id="id"/>
-          </fieldset>
-        </form>
+        <div class="filter">
+          <input class="search wide-input rounded_input ui-widget"
+            placeholder="Filter..."/>
+        </div>
+
       </div>
 
-      <div class="filter">
-        <input class="search wide-input rounded_input ui-widget"
-          placeholder="Filter..."/>
+      <div id="playerlist" class="playerlist">
+        <ul class="list"></ul>
       </div>
-
-      <ul class="list"></ul>
 
       <div id="authdiv" class="authenticate">
         <input id="authenticate" class="wide-input ui-widget rounded_input" style="display: inline-block;" placeholder="Login with your email address"/>
@@ -47,14 +52,14 @@
         <span id="username" class='ui-widget' style="display: none;"></span>
         <span id="failure" class='ui-widget' style="display: none;"></span>
         <br/>
-        <button id="refresh" class="ui-widget" style="display: none;">Refresh</button>
-        <button id="logout" class="ui-widget" style="display: none;">Logout</button>
+        <button id="refresh" class="ui-widget" style="display: none; bottom: 8px;">Refresh</button>
+        <button id="logout" class="ui-widget" style="display: none; bottom: 8px;">Logout</button>
       </div>
     </div>
 
     <div id="player" class="player">
       <iframe id="playerframe" class="playerframe"></iframe>
     </div>
-
+    </div>
   </body>
 </html>

@@ -521,7 +521,7 @@ function populateRemoteDatabase()
   $.ajax(
   {
     type: "POST",
-    url: "http://homepages.inf.ed.ac.uk/cgi/postDB.cgi",
+    url: "http://homepages.inf.ed.ac.uk/cgi/s0128959/postDB.cgi",
     dataType: "json",
     data: { "data": stringified , 
             "dbname": localStorage.getItem("dbname"), 
@@ -529,7 +529,6 @@ function populateRemoteDatabase()
             "password": localStorage.getItem("password"), 
             "rev": localStorage.getItem("rev"),
             "callback": "callback"}
-    }
   }).complete(function(jqXHR, returnedData) {
       var returnedData = jqXHR.responseText;
       returnedData = returnedData.replace("callback(", "");
@@ -831,10 +830,10 @@ function toggleStatusMessage(toEnable, optionalValue, uname)
 
 // Resize the player whenever the window is resized.
 $(window).resize(function() {
-  if ($("#playerframe").src != null && $("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
-  {
+  //if ($("#playerframe").src != null && $("#playerframe").src.search("bandcamp.com/Embedded/") <= 0)
+  //{
     setPlayerDivDimensions();
-  }
+  //}
 });
 
 
