@@ -266,10 +266,11 @@ function readPlayers()
   }
 
   var options = {
-    item: '<li><div class="playerLinkDiv"><div><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#"">Delete</a></div></div></li>'
+    item: '<li><div class="playerLinkDiv"><div><img id="icon" class="icon" width=16 height=16 src=""></img><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#"">Delete</a></div></div></li>'
   };
 
   var playerList = new List('playerlist', options, values);
+  populateIcons();
   setPlaylistEventHandlers();
 }
 
@@ -735,6 +736,35 @@ function localStorageWithoutCredentials()
   return s;
 }
 
+function determineIcon(url)
+{
+  if (url.search("bandcamp.com") > 0)
+  {
+    return "http://s0.bcbits.com/img/bc_favicon.ico";
+  }
+  else if (url.search("soundcloud.com") > 0)
+  {
+    return "http://soundcloud.com/favicon.ico";
+  }
+  else if (url.search("rdio.com") > 0)
+  {
+    return "http://www.rdio.com/media/favicon_rdio_2012_11_15.ico";
+  }
+  else if (url.search("spotify.com") > 0)
+  {
+    return "https://www.spotify.com/uk/favicon.ico";
+  }
+  else if (url.search("grooveshark.com") > 0)
+  {
+    return "http://grooveshark.com/favicon.ico";
+  }
+  else
+  {
+    return "";
+  }
+}
+
+
 // ---------- //
 // UI changes //
 // ---------- //
@@ -836,4 +866,17 @@ $(window).resize(function() {
   //}
 });
 
+function populateIcons()
+{
+  // Can't seem to set attributes in list.js
+  var icons = $(".icon");
+  $.each(icons, function(i,e)
+  {
+    var p = e.parentNode;
+    console.log(p);
+    var url = p.childNodes[2].innerHTML;
+    var iconurl = determineIcon(url);
+    e.src = iconurl;
+  });
+}
 
