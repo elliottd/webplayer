@@ -179,7 +179,7 @@ function setPlaylistEventHandlers()
   // TODO: Fix this selector. It is too easy to break.
 
   $(".tools-edit").click(function(event) {
-    $("#playerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(2).textContent).dialog("open");
+    $("#playerForm").data("id",event.currentTarget.parentNode.parentNode.parentNode.childNodes.item(0).childNodes.item(0).childNodes.item(3).textContent).dialog("open");
   });
 
   // This binds actions to the new <li> elements that make them open the players
@@ -196,7 +196,7 @@ function loadPlayer(sender) {
   // Load a player into the iframe
   // TODO: Fix focus so <space> can pause
   var iframe = document.getElementById("playerframe");
-  var purl = sender.currentTarget.parentNode.childNodes.item(1).textContent;
+  var purl = sender.currentTarget.parentNode.childNodes.item(2).textContent;
   if (purl.search("soundcloud.com") > 0)
   {
     // TODO: Autoplay on load
@@ -231,7 +231,7 @@ function loadPlayer(sender) {
     $("#playerframe").css("right", "0");
     iframe.src = purl;
   }
-  document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(0).textContent;
+  document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(1).textContent;
 }
 
 
@@ -351,7 +351,7 @@ function deletePlayer(sender)
 {
   if (Modernizr.localstorage)
   {
-    var key = sender.currentTarget.parentNode.parentNode.childNodes.item(0).childNodes.item(2).textContent;
+    var key = sender.currentTarget.parentNode.parentNode.childNodes.item(0).childNodes.item(3).textContent;
     if (key != null)
     {
       localStorage.removeItem("webplayer.players."+key+".name");
