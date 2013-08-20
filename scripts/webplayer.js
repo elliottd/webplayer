@@ -207,7 +207,7 @@ function loadPlayer(sender) {
     $("#playerframe").css("margin", "");
     $("#playerframe").css("width", "100%");
   }
-  if (purl.search("bandcamp.com/Embedded") > 0)
+  else if (purl.search("bandcamp.com/Embedded") > 0)
   {
     // This lets use dynamically choose the size of the embedded player, 
     // given the size of the user's browser display height.
@@ -223,6 +223,16 @@ function loadPlayer(sender) {
       $("#playerframe").css("height", "400");
       $("#playerframe").css("width", "550");
     }
+    $("#playerframe").css("margin", "auto");
+    $("#playerframe").css("position", "absolute");
+    $("#playerframe").css("top", "0");
+    $("#playerframe").css("bottom", "0");
+    $("#playerframe").css("left", "0");
+    $("#playerframe").css("right", "0");
+    iframe.src = purl;
+  }
+  else
+  {
     $("#playerframe").css("margin", "auto");
     $("#playerframe").css("position", "absolute");
     $("#playerframe").css("top", "0");
