@@ -93,6 +93,7 @@ function initialiseNewPlayerForm()
     if (e.which == 13) {
       // just trigger the submit handler
           addNewPlayer($("#name").val(), $("#address").val()); 
+          e.preventDefault();
           $( "#playerForm" ).dialog( "close" );
     }
   });
@@ -100,6 +101,7 @@ function initialiseNewPlayerForm()
     if (e.which == 13) {
       // just trigger the submit handler
           addNewPlayer($("#name").val(), $("#address").val()); 
+          e.preventDefault();
           $( "#playerForm" ).dialog( "close" );
     }
   });
@@ -214,7 +216,7 @@ function loadPlayer(sender) {
     if (window.innerHeight > 700)
     {
       purl = purl.replace("$X", "large");
-      $("#playerframe").css("height", "600");
+      $("#playerframe").css("height", "700");
       $("#playerframe").css("width", "550");
     }
     else
@@ -233,6 +235,8 @@ function loadPlayer(sender) {
   }
   else
   {
+    $("#playerframe").css("height", "100%");
+    $("#playerframe").css("width", "100%");
     $("#playerframe").css("margin", "auto");
     $("#playerframe").css("position", "absolute");
     $("#playerframe").css("top", "0");
@@ -791,6 +795,8 @@ function setPlayerDivDimensions()
   // TODO: Set div and frame height more correctly than this hack.
   $("#player").css("height", window.innerHeight);
   $("#playerframe").css("height", window.innerHeight);
+  // 130 for controller 170 for authentication
+  $("#sidebar").css("height", window.innerHeight - 130 - 170);
 }
 
 function slideDownwards()
