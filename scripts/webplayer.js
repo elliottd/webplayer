@@ -474,14 +474,13 @@ function retrieveRemoteDatabase()
             'username': localStorage.getItem('username'), 
             'password': localStorage.getItem('password')}
   }).done(function(returnedData) {
-    console.log(returnedData);
     var code = returnedData['code'];
-    console.log(code);
     if (code == '200')
     {
         console.log("200: Retrieve success");
         var data = returnedData['data'];
-        if (Object.keys(data).length == 3)
+        // Make this not rely on a count
+        if (remoteDatabaseIsEmpty(data))
         {
           // This was an empty database so populate the cloud from localhost.
           localStorage.setItem("rev", data['_rev']);
@@ -651,6 +650,15 @@ function populateLocalDatabase(retrievedData)
 // Auxiliary functions //
 // ------------------- //
 
+function remoteDatabaseIsEmpty(database)
+{
+  if (Object.keys(database).length < 3)
+  {
+      return true;
+  }
+  return false;
+}
+
 function convertDBName(name)
 {
   // Cloudant doesn't allow certain characters so we need to convert them.
@@ -811,8 +819,7 @@ function slideUpwards()
 
 function updatePlayerFrame()
 {
-    if (localStorage.length == 0 || 
-        localStorage.getItem("webplayer.counter") == 0)
+    if (localStorage.length == 0)
     {
       initialiseLocalStorage();
       var iframe = document.getElementById("playerframe");
@@ -889,7 +896,6 @@ function populateIcons()
   $.each(icons, function(i,e)
   {
     var p = e.parentNode;
-    console.log(p);
     var url = p.childNodes[2].innerHTML;
     var iconurl = determineIcon(url);
     e.src = iconurl;
