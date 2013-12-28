@@ -201,8 +201,14 @@ function loadPlayer(sender) {
   var purl = sender.currentTarget.parentNode.childNodes.item(2).textContent;
   if (purl.search("soundcloud.com") > 0)
   {
-    // TODO: Autoplay on load
-    iframe.src = "http://w.soundcloud.com/player/?url="+purl;
+    if (purl.search("playlist") > 0)
+    {
+        iframe.src = "http://w.soundcloud.com/player/?playlist="+purl;
+    }
+    else
+    {
+      iframe.src = "http://w.soundcloud.com/player/?url="+purl;
+    }
     soundcloudWidget = SC.Widget(iframe);
     soundcloudWidget.load(purl, {'auto_play': true});
     $("#playerframe").css("height", "100%");
@@ -355,7 +361,6 @@ function addNewPlayer(name, xurl)
                    });
                    return;
               }
-              if (
               var counter = parseInt(localStorage.getItem("webplayer.counter"));
               if (name.length > 0)
               {
