@@ -91,18 +91,37 @@ function initialiseNewPlayerForm()
 
   $('#name').keydown(function (e) {
     if (e.which == 13) {
-      // just trigger the submit handler
+      if ($("#id").val() == "")
+      {
           addNewPlayer($("#name").val(), $("#address").val()); 
           e.preventDefault();
           $( "#playerForm" ).dialog( "close" );
+      }
+      else
+      {
+          editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
+          e.preventDefault();
+          $( "#playerForm" ).dialog( "close" );
+      }
+      readPlayers();
     }
   });
+
   $('#address').keydown(function (e) {
     if (e.which == 13) {
-      // just trigger the submit handler
+      if ($("#id").val() == "")
+      {
           addNewPlayer($("#name").val(), $("#address").val()); 
           e.preventDefault();
           $( "#playerForm" ).dialog( "close" );
+      }
+      else
+      {
+          editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
+          e.preventDefault();
+          $( "#playerForm" ).dialog( "close" );
+      }
+      readPlayers();
     }
   });
 }
