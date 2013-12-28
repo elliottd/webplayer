@@ -302,6 +302,24 @@ function addNewPlayer(name, xurl)
       return;
     }
 
+    if (doesURLExistInCollection(xurl))
+    {
+         $(function() {
+             $( "#url-exists" ).dialog({
+                 modal: true,
+                 dialogClass: "addPlayer",    
+                 position: { my: "center", at: "center", of: window },
+                 resizable: false,
+                 buttons: {
+                     Ok: function() {
+                         $( this ).dialog( "close" );
+                     }
+                 }
+             });
+         });
+         return;
+    }
+
     if (xurl.search("bandcamp.com") > 0)
     {
       var albumid = "";
@@ -320,6 +338,24 @@ function addNewPlayer(name, xurl)
             {
               // Controversial use of the Bandcamp API to retrieve a Bandcamp-specific player
               yurl = "http://bandcamp.com/EmbeddedPlayer/album="+albumid+"/size=$X/bgcol=ffffff/linkcol=0687f5/notracklist=false/transparent=true/";
+              if (doesURLExistInCollection(yurl))
+              {
+                   $(function() {
+                       $( "#url-exists" ).dialog({
+                           modal: true,
+                           dialogClass: "addPlayer",    
+                           position: { my: "center", at: "center", of: window },
+                           resizable: false,
+                           buttons: {
+                               Ok: function() {
+                                   $( this ).dialog( "close" );
+                               }
+                           }
+                       });
+                   });
+                   return;
+              }
+              if (
               var counter = parseInt(localStorage.getItem("webplayer.counter"));
               if (name.length > 0)
               {
@@ -649,6 +685,20 @@ function populateLocalDatabase(retrievedData)
 // ------------------- //
 // Auxiliary functions //
 // ------------------- //
+
+function doesURLExistInCollection(url)
+{
+  var counter = parseInt(localStorage["webplayer.counter"])
+  for (var i = 0; i < counter; i++)
+  {
+    if (localStorage.getItem("webplayer.players."+i+".url") == url)
+    {
+        return true;
+    }
+  }
+  return false;
+}
+
 
 function remoteDatabaseIsEmpty(database)
 {
