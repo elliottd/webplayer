@@ -5,8 +5,47 @@ $( document ).ready(function() {
     // This browser supports HTML5 so we can store the players
     // in the browser localstorage.
     login(convertDBName(localStorage.getItem("dbname")));
-    updatePlayerFrame();
+    initialiseEventHandlers();
+    setPlayerDivDimensions();
     readPlayers();
+
+    $("#intro").dialog(
+    {
+      autoOpen:false,
+      modal: true,
+      appendTo: "#player",
+      minWidth: "650px",
+      width: "650px",
+      height: "auto",
+      position: { my: "center", at: "center", of: window },
+      resizable: true,
+      open: function() {
+        $('.ui-widget-overlay').addClass('darker-overlay');
+      },
+      close: function() {
+        $('.ui-widget-overlay').removeClass('darker-overlay');
+        $("#intro").css("visibility", "hidden");
+      }
+    });
+
+    // BXSlider needs to be initialised in document.ready
+
+    var mySlider = $('.bxslider').bxSlider({
+      mode: 'fade',
+      captions: false,
+      adaptiveHeight: true,
+      infiniteLoop: false,
+      hideControlOnEnd: true
+    });
+
+    $("#helper").click(function(event) {
+      $("#intro").css("visibility", "visible");
+      $("#intro").dialog("open");
+      // We need to reload the slider because it was not visible on load
+      mySlider.reloadSlider();
+    });
+
+    updatePlayerFrame();
   }
   else
   {
@@ -14,9 +53,6 @@ $( document ).ready(function() {
     // maybe try dojox.storage or a third-party solution
     alert("HTML5 localtstorage not supported =(")
   }
-
-  initialiseEventHandlers();
-  setPlayerDivDimensions();
 
 });
 
@@ -896,8 +932,6 @@ function updatePlayerFrame()
     if (localStorage.length == 0)
     {
       initialiseLocalStorage();
-      var iframe = document.getElementById("playerframe");
-      iframe.src="first.html";
     }
     else
     {
