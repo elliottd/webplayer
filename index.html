@@ -7,6 +7,8 @@
 
     <link type="text/css" href="css/webplayer.css" rel="stylesheet">
     <link type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link type="text/css" href="css/jquery-ui.css" rel="stylesheet">
+    <link type="text/css" href="css/jquery.bxslider.css" rel="stylesheet" />
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="scripts/webplayer.js"></script>
@@ -15,6 +17,7 @@
     <script type="text/javascript" src="https://w.soundcloud.com/player/api.js"></script>
     <script type="text/javascript" src="scripts/jquery.hoverIntent.minified.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="scripts/jquery.bxslider.min.js"></script>
   </head>
   <body>
 
@@ -62,10 +65,92 @@
         <br/>
         <button id="refresh" class="ui-widget" style="display: none; bottom: 8px;">Refresh</button>
         <button id="logout" class="ui-widget" style="display: none; bottom: 8px;">Logout</button>
+        <br/>
+        <a id="helper" href="#">Need help?</a>
       </div>
     </div>
 
     <div id="player" class="player">
+      <!-- Introductory content begins -->
+      <div id="intro" class="ui-widget" title="Welcome to Webplayer!" style="width: 600px; margin: 0 auto; visibility: hidden; padding-bottom: 50px;">
+        <ul class="bxslider" id="introslider" style="padding-left: 0; margin-top: 0px; width: 600px;">
+          <li style="width: 600px;">
+           <div class="introduction" style="text-align: center; width: 600px;">
+            
+              <p>It looks like this is your first time here.</p>
+  
+              <p>Webplayer is an internet jukebox. You can use it to save and access your 
+                 favourite music across multiple devices.</p>
+            
+              <p>It is compatible with 
+                 <a href="http://www.soundcloud.com">Soundcloud</a>, 
+                 <a href="http://www.bandcamp.com">Bandcamp</a>, and 
+                 <a href="http://www.grooveshark.com">Grooveshark</a> and has
+                 been extensively tested on Mozilla Firefox. Please 
+                 <a href="https://github.com/elliottd/webplayer/issues">report any issues</a> you experience.
+              </p>
+  
+              <br/>
+           
+            </div>
+          </li>
+          <li>
+            <div class="introduction" style="text-align: center;">
+           
+              <p>The sidebar is where you manage your personal jukebox.</p>
+  
+              <img src="images/sidebar.png"/>
+  
+            </div>
+          </li>
+          <li>
+            <div class="introduction" style="text-align:center;">
+              <p>
+                Use the New Player button to add links to your collection.
+              </p>
+  
+              <img src="images/newplayer.png"/>
+           
+             <p>It's a simple two-step process to add a link:</p>
+  
+              <p style="width: 400px; margin: 0 auto; padding: 4px;">              
+                <ol>
+                  <li>Paste the link into the Address field</li>
+                  <li>Use a name that you'll remember</li>
+                </ol>
+              </p>
+              <img width=400px src="images/newplayer2.png"/>
+            
+              <br/><br/>
+            </div>
+          </li>
+          <li>
+            <div class="introduction" style="text-align:center;">
+           
+           
+              <p>
+                Hover over an item in your collection to make changes.
+              </p>
+              <img src="images/edit.png"/>
+            
+              <br/><br/>
+            </div>
+          </li>
+          <li>
+            <div class="introduction" style="text-align: center;">
+       
+              <p>
+                Synchronise your collection across multiple devices.<br/>
+              </p>
+              <img src="images/login.png"/>
+        
+              <br/><br/>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- Introductory content ends -->
+    
       <iframe id="playerframe" class="playerframe"></iframe>
     </div>
     </div>
