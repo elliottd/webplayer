@@ -7,3 +7,4 @@ Attributions
  * api.js is used under the Soundcloud API Terms of Use.
  * jquery.hoverIntent.minified.js is used under its MIT License. 
  * jquery-ui.js is used under its MIT License.
+ * jquery.bxslider.js is used under its MIT License.
