@@ -340,6 +340,8 @@ function readPlayers()
     }
   }
 
+  values.reverse();
+
   var options = {
     item: '<li><div class="playerLinkDiv"><div><img id="icon" class="icon" width=16 height=16 src=""></img><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#"">Delete</a></div></div></li>'
   };
