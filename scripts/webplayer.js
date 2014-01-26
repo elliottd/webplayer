@@ -46,6 +46,8 @@ $( document ).ready(function() {
     });
 
     updatePlayerFrame();
+
+    retrieveAndSetCommitSHA();
   }
   else
   {
@@ -902,6 +904,14 @@ function determineIcon(url)
 // ---------- //
 // UI changes //
 // ---------- //
+
+function retrieveAndSetCommitSHA()
+{
+    var repo = 'elliottd/webplayer';
+    $.getJSON("https://api.github.com/repos/" + repo + "/commits", function(data) {
+                $("#commit-revision").text(data[0].sha.slice(0,10));
+             });
+}
 
 function setPlayerDivDimensions()
 {
