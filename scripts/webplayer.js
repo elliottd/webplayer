@@ -396,10 +396,14 @@ function addNewPlayer(name, xurl)
           url: "http://api.bandcamp.com/api/url/1/info?key=vatnajokull&url="+xurl, 
           success: function(d) 
           { 
-            console.log(d); 
             albumid = d.album_id; 
 
-            if (albumid != null)
+            if (d.album_id == null)
+            {
+              // This is a top-level Bandcamp page, so add it as a regular HTML document
+              addPlayer(name, xurl);
+            }
+            else
             {
               // Controversial use of the Bandcamp API to retrieve a Bandcamp-specific player
               yurl = "http://bandcamp.com/EmbeddedPlayer/album="+albumid+"/size=$X/bgcol=ffffff/linkcol=0687f5/notracklist=false/transparent=true/";
@@ -420,20 +424,7 @@ function addNewPlayer(name, xurl)
                    });
                    return;
               }
-              var counter = parseInt(localStorage.getItem("webplayer.counter"));
-              if (name.length > 0)
-              {
-                localStorage.setItem("webplayer.players." + counter+".name", name);
-              }
-              else
-              {
-                localStorage.setItem("webplayer.players." + counter+".name", "No name");
-              }
-              localStorage.setItem("webplayer.players." + counter+".added", new Date());
-              localStorage.setItem("webplayer.players." + counter+".url", yurl);
-              localStorage.setItem("webplayer.counter", counter + 1);
-              populateRemoteDatabase();
-              readPlayers();
+              addPlayer(name, yurl);
             }
           }
         }
@@ -441,24 +432,29 @@ function addNewPlayer(name, xurl)
     }
     else
     {
-  
-      var counter = parseInt(localStorage.getItem("webplayer.counter"));
-      if (name.length > 0)
-      {
-        localStorage.setItem("webplayer.players." + counter+".name", name);
-      }
-      else
-      {
-        localStorage.setItem("webplayer.players." + counter+".name", "No name");
-      }
-      localStorage.setItem("webplayer.players." + counter+".added", new Date());
-      localStorage.setItem("webplayer.players." + counter+".url", xurl);
-      localStorage.setItem("webplayer.counter", counter + 1);
-      populateRemoteDatabase();
-      readPlayers();
+      addPlayer(name, xurl);
     }
   }
   return false;
+}
+
+function addPlayer(name, url)
+{
+  // Dirty auxiliary function that actually communicates with the database
+  var counter = parseInt(localStorage.getItem("webplayer.counter"));
+  if (name.length > 0)
+  {
+    localStorage.setItem("webplayer.players." + counter+".name", name);
+  }
+  else
+  {
+    localStorage.setItem("webplayer.players." + counter+".name", "No name");
+  }
+  localStorage.setItem("webplayer.players." + counter+".added", new Date());
+  localStorage.setItem("webplayer.players." + counter+".url", url);
+  localStorage.setItem("webplayer.counter", counter + 1);
+  populateRemoteDatabase();
+  readPlayers();
 }
 
 function deletePlayer(sender)
