@@ -262,6 +262,10 @@ function loadPlayer(sender) {
     {
         iframe.src = "http://w.soundcloud.com/player/?playlist="+purl;
     }
+    else if (purl.search("sets") > 0)
+    {
+        iframe.src="http://w.soundcloud.com/player/?set="+purl;
+    }
     else
     {
       iframe.src = "http://w.soundcloud.com/player/?url="+purl;
