@@ -300,6 +300,11 @@ function loadPlayer(sender) {
     $("#playerframe").css("right", "0");
     iframe.src = purl;
   }
+  else if (purl.search("spotify.com") > 0)
+  {
+    iframe.src = "";
+    window.open(purl, "_blank");
+  }
   else
   {
     $("#playerframe").css("height", "100%");
@@ -387,6 +392,12 @@ function addNewPlayer(name, xurl)
              });
          });
          return;
+    }
+
+    if (xurl.search("spotify.com") > 0)
+    {
+        addPlayer(name, xurl);
+        return;
     }
 
     if (xurl.search("bandcamp.com") > 0)
@@ -893,6 +904,10 @@ function determineIcon(url)
   else if (url.search("grooveshark.com") > 0)
   {
     return "http://grooveshark.com/favicon.ico";
+  }
+  else if (url.search("spotify.com") > 0)
+  {
+      return "https://play.spotify.com/favicon.ico";
   }
   else
   {
