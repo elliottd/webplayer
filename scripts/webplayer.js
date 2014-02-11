@@ -305,6 +305,19 @@ function loadPlayer(sender) {
     iframe.src = "";
     window.open(purl, "_blank");
   }
+  else if (purl.search("youtube.com") > 0)
+  {
+      $("#playerframe").css("height", "385");
+      $("#playerframe").css("width", "640");
+      $("#playerframe").css("margin", "auto");
+      $("#playerframe").css("position", "absolute");
+      $("#playerframe").css("top", "0");
+      $("#playerframe").css("bottom", "0");
+      $("#playerframe").css("left", "0");
+      $("#playerframe").css("right", "0");
+      var videoid = purl.split("v=")[1];
+      iframe.src = "http://www.youtube.com/embed/"+videoid;
+  }
   else
   {
     $("#playerframe").css("height", "100%");
@@ -907,7 +920,11 @@ function determineIcon(url)
   }
   else if (url.search("spotify.com") > 0)
   {
-      return "https://play.spotify.com/favicon.ico";
+      return "https://play.spotify.com/favicon.ico";  
+  }
+  else if (url.search("youtube.com") > 0)
+  {
+      return "http://www.youtube.com/favicon.ico";
   }
   else
   {
