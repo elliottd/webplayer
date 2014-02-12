@@ -15,7 +15,7 @@ $( document ).ready(function() {
       modal: true,
       appendTo: "body",
       minWidth: "650px",
-      width: "650px",
+      width: "680px",
       height: "auto",
       position: { my: "center", at: "top+15%", of: window },
       resizable: true,
