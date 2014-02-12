@@ -13,11 +13,11 @@ $( document ).ready(function() {
     {
       autoOpen:false,
       modal: true,
-      appendTo: "#player",
+      appendTo: "body",
       minWidth: "650px",
       width: "650px",
       height: "auto",
-      position: { my: "center", at: "center", of: window },
+      position: { my: "center", at: "top+15%", of: window },
       resizable: true,
       open: function() {
         $('.ui-widget-overlay').addClass('darker-overlay');
