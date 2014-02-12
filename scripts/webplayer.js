@@ -324,8 +324,9 @@ function loadPlayer(sender) {
       else
       {
         videoid = purl.split("v=")[1];
-        iframe.src = "http://www.youtube.com/embed/"+videoid;
+        iframe.src = "http://www.youtube.com/v/"+videoid+"?version=3";
       }
+      iframe.src += "&autoplay=1#t=1";
   }
   else
   {
