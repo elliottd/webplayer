@@ -315,8 +315,17 @@ function loadPlayer(sender) {
       $("#playerframe").css("bottom", "0");
       $("#playerframe").css("left", "0");
       $("#playerframe").css("right", "0");
-      var videoid = purl.split("v=")[1];
-      iframe.src = "http://www.youtube.com/embed/"+videoid;
+      var videoid;
+      if (purl.search("playlist") > 0)
+      {
+        videoid = purl.split("list=")[1];
+        iframe.src = "http://www.youtube.com/embed?listType=playlist&list="+videoid;
+      }
+      else
+      {
+        videoid = purl.split("v=")[1];
+        iframe.src = "http://www.youtube.com/embed/"+videoid;
+      }
   }
   else
   {
