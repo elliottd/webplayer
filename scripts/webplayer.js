@@ -969,7 +969,7 @@ function setPlayerDivDimensions()
   $("#player").css("height", window.innerHeight);
   $("#playerframe").css("height", window.innerHeight);
   // 130 for controller 170 for authentication
-  $("#sidebar").css("height", window.innerHeight - 130 - 170);
+  $("#sidebar").css("height", window.innerHeight-250);
 }
 
 function slideDownwards()

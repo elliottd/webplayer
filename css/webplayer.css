@@ -87,15 +87,14 @@ div.tools
   float: left;
   width: 320px;
   background-color: #4c4c4c;
-  height: 617px;
 }
 
 .playerlist
 {
   background-color: #4c4c4c;
   text-align: center;
-  height: 100%;
   width: 320px;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -105,16 +104,15 @@ div.tools
   width: 320px;
   text-align: center;
   background-color: #4c4c4c;
-  height:130px;
+  height:50px;
 }
 
 .authenticate
 {
+  height: 200px;
   width: 320px;
   background-color: #4c4c4c;
-  position: fixed;
   text-align: center;
-  height:170px;
 }
 
 .rounded_input
