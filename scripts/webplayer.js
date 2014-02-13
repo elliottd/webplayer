@@ -624,7 +624,7 @@ function retrieveRemoteDatabase()
         {
           populateLocalDatabase(data)
         }
-        toggleStatusMessage("#loggedin");
+        toggleStatusMessage("#synchronised");
     }
     else if (code == '400')
     {
@@ -690,7 +690,7 @@ function populateRemoteDatabase()
         localStorage.setItem("rev", returnedData['new_revision']);
     
         // Tell the user synchronisation is complete.
-        toggleStatusMessage("#loggedin");
+        toggleStatusMessage("#synchronised");
       }
       else if (code == '400')
       {
@@ -1031,6 +1031,7 @@ function toggleStatusMessage(toEnable, optionalValue, uname)
   $("#loggedin").css("display", "none");
   $("#failure").css("display", "none");
   $("#username").css("display", "none");
+  $("#synchronised").css("display", "none");
 
   if (toEnable != null)
   {
@@ -1040,6 +1041,13 @@ function toggleStatusMessage(toEnable, optionalValue, uname)
     if (optionalValue != null)
     {
       $(toEnable).text(optionalValue);
+    }
+    if (toEnable == "#synchronised")
+    {
+        var newDate = new Date();
+        newDate.setTime((new Date).getTime());
+        var details = [hour, min, s] = [newDate.getHours(), newDate.getMinutes(), newDate.getSeconds()];
+        $(toEnable).text("Last synchronised at " + details[0] + ":" + details[1] + ":" + details[2]);
     }
   }
 }
