@@ -952,7 +952,8 @@ function retrieveAndSetCommitSHA()
     // http://stackoverflow.com/questions/16625649/how-do-i-get-the-sha-of-the-latest-commit-on-a-github-repository-via-jquery
     var repo = 'elliottd/webplayer';
     $.getJSON("https://api.github.com/repos/" + repo + "/commits", function(data) {
-                $("#commit-revision").text(data[0].sha.slice(0,10));
+                var commitid = data[0].sha.slice(0,10);
+                $("#commit-revision").html("v. <a href='http://github.com/elliottd/webplayer/commit/" + commitid+"'>" + commitid +"</a>");
              });
 }
 
