@@ -85,11 +85,11 @@ function initialiseNewPlayerForm()
     position: { my: "center", at: "center", of: window },
     resizable: false,
     buttons: {
-      "Add player": function() {
+      "Add link": function() {
           addNewPlayer($("#name").val(), $("#address").val()); 
           $( this ).dialog( "close" );
       },
-      "Edit player": function() {
+      "Edit link": function() {
           editPlayer($("#name").val(), $("#address").val(), $("#id").val()); 
           readPlayers();
           $( this ).dialog( "close" );
@@ -106,13 +106,13 @@ function initialiseNewPlayerForm()
          $("#address").val("");
          $("#name").val("");
          $("#id").val("");
-         $('.ui-button:contains(Add player)').show()
-         $('.ui-button:contains(Edit player)').hide()
+         $('.ui-button:contains(Add link)').show()
+         $('.ui-button:contains(Edit link)').hide()
        }
        else
        {
-         $('.ui-button:contains(Edit player)').show()
-         $('.ui-button:contains(Add player)').hide()
+         $('.ui-button:contains(Edit link)').show()
+         $('.ui-button:contains(Add link)').hide()
          $("#address").val(localStorage.getItem("webplayer.players."+id+".url"));
          $("#name").val(localStorage.getItem("webplayer.players."+id+".name"));
          $("#id").val(id);
