@@ -969,8 +969,8 @@ function setPlayerDivDimensions()
   // TODO: Set div and frame height more correctly than this hack.
   $("#player").css("height", window.innerHeight);
   $("#playerframe").css("height", window.innerHeight);
-  // 130 for controller 170 for authentication
-  $("#sidebar").css("height", window.innerHeight-250);
+  // 50 for controller 170 for authentication
+  $("#sidebar").css("height", window.innerHeight-220);
 }
 
 function slideDownwards()
