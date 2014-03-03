@@ -383,6 +383,14 @@ function readPlayers()
   var playerList = new List('playerlist', options, values);
   populateIcons();
   setPlaylistEventHandlers();
+
+  // https://github.com/javve/list.js/issues/216#issuecomment-36559731
+  var searchField = playerList.helpers.getByClass(document, 'search', true);
+
+  playerList.helpers.events.bind(searchField, 'keyup', function(e) {
+    var target = e.target || e.srcElement; // IE have srcElement
+    playerList.search(target.value);
+  });
 }
 
 function addNewPlayer(name, xurl)
