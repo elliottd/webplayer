@@ -272,32 +272,10 @@ function loadPlayer(sender) {
     }
     soundcloudWidget = SC.Widget(iframe);
     soundcloudWidget.load(purl, {'auto_play': true});
-    $("#playerframe").css("height", "100%");
-    $("#playerframe").css("margin", "");
-    $("#playerframe").css("width", "100%");
   }
   else if (purl.search("bandcamp.com/Embedded") > 0)
   {
-    // This lets use dynamically choose the size of the embedded player, 
-    // given the size of the user's browser display height.
-    if (window.innerHeight > 700)
-    {
-      purl = purl.replace("$X", "large");
-      $("#playerframe").css("height", "700");
-      $("#playerframe").css("width", "550");
-    }
-    else
-    {
-      purl = purl.replace("$X", "medium");
-      $("#playerframe").css("height", "400");
-      $("#playerframe").css("width", "550");
-    }
-    $("#playerframe").css("margin", "auto");
-    $("#playerframe").css("position", "absolute");
-    $("#playerframe").css("top", "0");
-    $("#playerframe").css("bottom", "0");
-    $("#playerframe").css("left", "0");
-    $("#playerframe").css("right", "0");
+    purl = purl.replace("$X", "medium");
     iframe.src = purl;
   }
   else if (purl.search("spotify.com") > 0)
@@ -307,14 +285,6 @@ function loadPlayer(sender) {
   }
   else if (purl.search("youtube.com") > 0)
   {
-      $("#playerframe").css("height", "385");
-      $("#playerframe").css("width", "640");
-      $("#playerframe").css("margin", "auto");
-      $("#playerframe").css("position", "absolute");
-      $("#playerframe").css("top", "0");
-      $("#playerframe").css("bottom", "0");
-      $("#playerframe").css("left", "0");
-      $("#playerframe").css("right", "0");
       var videoid;
       if (purl.search("playlist") > 0)
       {
@@ -330,16 +300,9 @@ function loadPlayer(sender) {
   }
   else
   {
-    $("#playerframe").css("height", "100%");
-    $("#playerframe").css("width", "100%");
-    $("#playerframe").css("margin", "auto");
-    $("#playerframe").css("position", "absolute");
-    $("#playerframe").css("top", "0");
-    $("#playerframe").css("bottom", "0");
-    $("#playerframe").css("left", "0");
-    $("#playerframe").css("right", "0");
     iframe.src = purl;
   }
+  setPlayerDivDimensions();
   document.title = "Webplayer - " + sender.currentTarget.parentNode.childNodes.item(1).textContent;
 }
 
@@ -999,6 +962,48 @@ function setPlayerDivDimensions()
   $("#playerframe").css("height", window.innerHeight);
   // 100 for controller 170 for authentication
   $("#sidebar").css("height", window.innerHeight-270);
+  
+  var iframe = document.getElementById("playerframe");
+  if (iframe.src.search("soundcloud.com") > 0)
+  {
+    $("#playerframe").css("height", "100%");
+    $("#playerframe").css("margin", "");
+    $("#playerframe").css("width", "100%");
+  }
+  else if (iframe.src.search("bandcamp.com") > 0)
+  {
+    $("#playerframe").css("height", "120");
+    $("#playerframe").css("width", "640");
+    $("#playerframe").css("margin", "auto");
+    $("#playerframe").css("position", "absolute");
+    $("#playerframe").css("top", "0");
+    $("#playerframe").css("bottom", "0");
+    $("#playerframe").css("left", "0");
+    $("#playerframe").css("right", "0");
+  }
+  else if (iframe.src.search("youtube.com") > 0)
+  {
+      $("#playerframe").css("height", "385");
+      $("#playerframe").css("width", "640");
+      $("#playerframe").css("margin", "auto");
+      $("#playerframe").css("position", "absolute");
+      $("#playerframe").css("top", "0");
+      $("#playerframe").css("bottom", "0");
+      $("#playerframe").css("left", "0");
+      $("#playerframe").css("right", "0");
+  }
+  else
+  {
+    $("#playerframe").css("height", "100%");
+    $("#playerframe").css("width", "100%");
+    $("#playerframe").css("margin", "auto");
+    $("#playerframe").css("position", "absolute");
+    $("#playerframe").css("top", "0");
+    $("#playerframe").css("bottom", "0");
+    $("#playerframe").css("left", "0");
+    $("#playerframe").css("right", "0");
+  }
+
 }
 
 function slideDownwards()
