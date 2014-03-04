@@ -1075,7 +1075,7 @@ function toggleStatusMessage(toEnable, optionalValue, uname)
     {
         var newDate = new Date();
         newDate.setTime((new Date).getTime());
-        var details = [hour, min, s] = [newDate.getHours(), newDate.getMinutes(), newDate.getSeconds()];
+        var details = [newDate.getHours(), newDate.getMinutes(), newDate.getSeconds()];
         $(toEnable).text("Last synchronised at " + details[0] + ":" + details[1] + ":" + details[2]);
     }
   }
