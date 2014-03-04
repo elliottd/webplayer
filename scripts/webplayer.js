@@ -803,6 +803,14 @@ function doesURLExistInCollection(url)
   {
     if (localStorage.getItem("webplayer.players."+i+".url") == url)
     {
+        $("#searcher").val(localStorage.getItem("webplayer.players."+i+".name"));
+        $("#searcher").keyup(function(e) {
+          var playerList = new List("playerlist", {valueNames: ['name', 'url', 'id']});
+          var searchField = playerList.helpers.getByClass(document, 'search', true);
+          var target = e.target || e.srcElement; // IE have srcElement
+          playerList.search(target.value);
+        });
+        $("#searcher").trigger("keyup");
         return true;
     }
   }
