@@ -377,20 +377,24 @@ function readPlayers()
   values.reverse();
 
   var options = {
-    item: '<li><div class="playerLinkDiv"><div><img id="icon" class="icon" width=16 height=16 src=""></img><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#"">Delete</a></div></div></li>'
+    valueNames: ['name', 'url', 'id'],
+    item: '<li><div class="playerLinkDiv"><div><img id="icon" class="icon" width=16 height=16 src=""></img><a id="playerLink" href="#" class="name playlist_button playerlink ui-widget"></a><span id="url" class="url hidden"></span><span id="id" class="id hidden"></span></div><div id="tools" class="hidden tools"><a class="tools-edit ui-widget" href="#">Edit</a><a class="tools-delete ui-widget" href="#">Delete</a></div></div></li>'
   };
 
+  var playerList = new List("playerlist", {valueNames: ['name', 'url', 'id']});
+  playerList.clear();
+
   var playerList = new List('playerlist', options, values);
-  populateIcons();
-  setPlaylistEventHandlers();
-
   // https://github.com/javve/list.js/issues/216#issuecomment-36559731
-  var searchField = playerList.helpers.getByClass(document, 'search', true);
 
+  var searchField = playerList.helpers.getByClass(document, 'search', true);
   playerList.helpers.events.bind(searchField, 'keyup', function(e) {
     var target = e.target || e.srcElement; // IE have srcElement
     playerList.search(target.value);
   });
+  populateIcons();
+  setPlaylistEventHandlers();
+
 }
 
 function addNewPlayer(name, xurl)
