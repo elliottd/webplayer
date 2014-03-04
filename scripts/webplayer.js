@@ -546,7 +546,7 @@ function login(uname)
   }
 
   // Update the user interface
-  toggleStatusMessage("#loggingin","" ,uname);
+  toggleStatusMessage("#loggingin",null,uname);
   toggleLogoutButton();
   toggleRefreshButton();
 
