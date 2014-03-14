@@ -8,6 +8,7 @@ $( document ).ready(function() {
     initialiseEventHandlers();
     setPlayerDivDimensions();
     readPlayers();
+    oneShotFixBandcampUrls();
 
     $("#intro").dialog(
     {
@@ -256,6 +257,7 @@ function loadPlayer(sender) {
   // TODO: Fix focus so <space> can pause
   var iframe = document.getElementById("playerframe");
   var purl = sender.currentTarget.parentNode.childNodes.item(2).textContent;
+  var sender_id = sender.currentTarget.parentNode.childNodes.item(3).textContent;
   if (purl.search("soundcloud.com") > 0)
   {
     if (purl.search("playlist") > 0)
@@ -273,10 +275,18 @@ function loadPlayer(sender) {
     soundcloudWidget = SC.Widget(iframe);
     soundcloudWidget.load(purl, {'auto_play': true});
   }
-  else if (purl.search("bandcamp.com/Embedded") > 0)
+  else if (purl.search("bandcamp.com") > 0)
   {
-    purl = purl.replace("$X", "medium");
-    iframe.src = purl;
+    if (localStorage.getItem("webplayer.players."+sender_id+".bcurl") != null)
+    {
+      bcurl = localStorage.getItem("webplayer.players."+sender_id+".bcurl");
+      bcurl = bcurl.replace("$X", "medium");
+      iframe.src = bcurl;
+    }
+    else
+    {
+      iframe.src = purl;
+    }
   }
   else if (purl.search("spotify.com") > 0)
   {
@@ -402,7 +412,7 @@ function addNewPlayer(name, xurl)
 
     if (xurl.search("spotify.com") > 0)
     {
-        addPlayer(name, xurl);
+        addPlayer({name: name, url: xurl});
         return;
     }
 
@@ -422,7 +432,7 @@ function addNewPlayer(name, xurl)
             if (d.album_id == null)
             {
               // This is a top-level Bandcamp page, so add it as a regular HTML document
-              addPlayer(name, xurl);
+              addPlayer({name: name, url: xurl});
             }
             else
             {
@@ -445,7 +455,7 @@ function addNewPlayer(name, xurl)
                    });
                    return;
               }
-              addPlayer(name, yurl);
+              addPlayer({name: name, url: xurl, bcurl: yurl});
             }
           }
         }
@@ -453,26 +463,35 @@ function addNewPlayer(name, xurl)
     }
     else
     {
-      addPlayer(name, xurl);
+      addPlayer({name: name, url: xurl});
     }
   }
   return false;
 }
 
-function addPlayer(name, url)
+function addPlayer(details)
 {
+  console.log(details)
   // Dirty auxiliary function that actually communicates with the database
   var counter = parseInt(localStorage.getItem("webplayer.counter"));
-  if (name.length > 0)
+  if (details.name.length > 0)
   {
-    localStorage.setItem("webplayer.players." + counter+".name", name);
+    localStorage.setItem("webplayer.players." + counter+".name", details.name);
   }
   else
   {
     localStorage.setItem("webplayer.players." + counter+".name", "No name");
   }
   localStorage.setItem("webplayer.players." + counter+".added", new Date());
-  localStorage.setItem("webplayer.players." + counter+".url", url);
+  if (details.bcurl != null)
+  {
+    localStorage.setItem("webplayer.players." + counter+".url", details.url);
+    localStorage.setItem("webplayer.players." + counter+".bcurl", details.bcurl);
+  }
+  else
+  {
+    localStorage.setItem("webplayer.players." + counter+".url", details.url);
+  }
   localStorage.setItem("webplayer.counter", counter + 1);
   populateRemoteDatabase();
   readPlayers();
@@ -930,6 +949,59 @@ function determineIcon(url)
   }
 }
 
+function replaceBandcampURL(counter, urlx)
+{
+  // Helper function that is run on the successful execution of the AJAX call
+  // to the Bandcamp API when trying to fix the Bandcamp URLs.
+
+  return function(d)
+  {
+    if (d.url == null)
+    {
+      // The URL doesn't exist. Panic.
+    }
+    else
+    {              
+      console.log("Found original URL. It was " + d.url.replace("?pk=564",""));
+      localStorage.setItem("webplayer.players."+counter+".url", d.url.replace("?pk=564",""));
+      localStorage.setItem("webplayer.players."+counter+".bcurl", urlx);             
+      populateRemoteDatabase();
+      readPlayers();
+    }
+  }
+}
+
+function oneShotFixBandcampUrls()
+{
+  // This really only needs to run one time and it will only affect
+  // existing Webplayer databases.
+  //
+  // The reason for this one-shot function is we have been storing the
+  // Bandcamp URLs in a format that makes them impossible to share from
+  // the Edit pop-up menu.
+
+  var counter = parseInt(localStorage["webplayer.counter"]);
+
+  for (var i = 0; i < counter; i++)
+  {
+    var urlx = localStorage.getItem("webplayer.players."+i+".url");
+    if (urlx != null && urlx.search("bandcamp.com/EmbeddedPlayer") > 0)
+    {
+      console.log("Attempting to fixing the Bandcamp URL for id " + i + " " + urlx);
+      var albumid = urlx.split("/")[4].split("=")[1];
+      // Controversial use of the Bandcamp API to retrieve a Bandcamp-specific player
+      $.ajax(
+        { 
+          async: false,
+          timeout: 1000,
+          dataType: "jsonp",
+          url: "http://api.bandcamp.com/api/album/2/info?key=vatnajokull&album_id="+albumid,
+          success: replaceBandcampURL(i, urlx)
+        }
+      );
+    }
+  }
+}
 
 // ---------- //
 // UI changes //
@@ -967,7 +1039,7 @@ function setPlayerDivDimensions()
     $("#playerframe").css("margin", "");
     $("#playerframe").css("width", "100%");
   }
-  else if (iframe.src.search("bandcamp.com") > 0)
+  else if (iframe.src.search("bandcamp.com/EmbeddedPlayer") > 0)
   {
     $("#playerframe").css("height", "120");
     $("#playerframe").css("width", "640");
