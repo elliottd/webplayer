@@ -22,6 +22,9 @@ $( document ).ready(function() {
       resizable: true,
       open: function() {
         $('.ui-widget-overlay').addClass('darker-overlay');
+        $('.ui-widget-overlay').bind('click',function() {
+          $('#intro').dialog('close');
+        });
       },
       close: function() {
         $('.ui-widget-overlay').removeClass('darker-overlay');
@@ -1095,6 +1098,10 @@ function updatePlayerFrame()
     {
       var iframe = document.getElementById("playerframe");
       iframe.src=""; 
+    }
+    if (localStorage.getItem("webplayer.counter") == 0)
+    {
+      $("#helper").trigger("click");
     }
 }
 
