@@ -225,6 +225,11 @@ function initialiseLocalStorage()
 {
   localStorage.clear();
   localStorage.setItem('webplayer.counter', 0);
+  // Add a few default players to help new users understand the application
+  addNewPlayer("Psy - 강남스타일", "http://www.youtube.com/watch?v=9bZkp7q19f0");
+  addNewPlayer("Kavinsky - Nightcall EP", "http://kavinsky.bandcamp.com/album/nightcall-ep");
+  addNewPlayer("Bill Orcutt - A History of Every One", "http://play.spotify.com/album/0J7mbKcIsY3oh4ulWoPVEJ");
+  addNewPlayer("Young Fathers - Dead", "https://soundcloud.com/youngfathers/sets/young-fathers-dead");
 }
 
 function setPlaylistEventHandlers()
@@ -261,6 +266,7 @@ function loadPlayer(sender) {
   var iframe = document.getElementById("playerframe");
   var purl = sender.currentTarget.parentNode.childNodes.item(2).textContent;
   var sender_id = sender.currentTarget.parentNode.childNodes.item(3).textContent;
+  iframe.src="";
   if (purl.search("soundcloud.com") > 0)
   {
     if (purl.search("playlist") > 0)
@@ -1016,7 +1022,7 @@ function retrieveAndSetCommitSHA()
     var repo = 'elliottd/webplayer';
     $.getJSON("https://api.github.com/repos/" + repo + "/commits", function(data) {
                 var commitid = data[0].sha.slice(0,10);
-                $("#commit-revision").html("v. <a href='http://github.com/elliottd/webplayer/commit/" + commitid+"'>" + commitid +"</a>");
+                $("#commit-revision").html("v. <a href='http://github.com/elliottd/webplayer/commit/" + commitid+"' target='_blank'>" + commitid +"</a>");
              });
 }
 
