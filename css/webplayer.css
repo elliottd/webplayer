@@ -2,7 +2,7 @@ body
 {
   margin: 0;
   font-size: 0.9em;
-  font-family: "Verdana,Arial,sans-serif"
+  font-family: Verdana, Arial, sans-serif;
 }
 
 ul.list {
@@ -88,6 +88,11 @@ div.tools
   float: left;
   width: 320px;
   background-color: #4c4c4c;
+}
+
+.sidebar a
+{
+  color: #f1f1f1;
 }
 
 .playerlist
