@@ -206,7 +206,8 @@ function initialiseLogoutButton()
     toggleStatusMessage(null);
     toggleLogoutButton();
     toggleRefreshButton();
-    initialiseLocalStorage();
+    localStorage.clear();
+    localStorage.setItem('webplayer.counter', 0);
     readPlayers();
     updatePlayerFrame();
   });
@@ -746,7 +747,8 @@ function populateLocalDatabase(retrievedData)
   var u = localStorage.getItem("username");
   var p = localStorage.getItem("password");
   var d = localStorage.getItem("dbname");
-  initialiseLocalStorage();
+  localStorage.clear();
+  localStorage.setItem('webplayer.counter', 0);
   localStorage.setItem("rev", retrievedData['_rev']);
   localStorage.setItem("username", u);
   localStorage.setItem("password", p);
@@ -1098,6 +1100,7 @@ function updatePlayerFrame()
 {
     if (localStorage.length == 0)
     {
+      $("#helper").trigger("click");
       initialiseLocalStorage();
     }
     else
